@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout — Nassalab</title>
+  <meta name="description" content="Finalize your order and choose a payment method — Nassalab">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0A66CC;
+      --bg: #f6fbff;
+      --card: #fff;
+      --muted: #6b7280;
+      --text: #0b1220;
+      --container: 1180px;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    a { color: inherit; text-decoration: none; }
+    
+    .container { max-width: 1000px; margin: 0 auto; padding: 28px; }
+
+    /* Header (Simple) */
+    header { border-bottom: 1px solid rgba(7,22,42,0.04); padding: 14px 0; background: var(--card); }
+    .nav-inner { display: flex; align-items: center; gap: 12px; max-width: 1000px; margin: 0 auto; padding: 0 28px; }
+    .logo { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(180deg, var(--primary), #075bb3); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 16px; }
+
+    /* Checkout Layout */
+    .checkout-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-top: 20px; }
+    
+    /* Left Column: Forms */
+    .form-section h2 { font-size: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; }
+    
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    input:not([type="radio"]):not([type="checkbox"]), select {
+      width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    /* Payment Methods */
+    .payment-options { display: flex; flex-direction: column; gap: 10px; }
+    .payment-method { 
+      border: 1px solid #d1d5db; border-radius: 8px; padding: 15px; cursor: pointer;
+      transition: all 0.2s; position: relative;
+    }
+    .payment-method.selected { border-color: var(--primary); background: #eaf6ff; }
+    .payment-method input[type="radio"] { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); }
+    .method-title { font-weight: 700; margin-bottom: 4px; }
+    .method-desc { font-size: 13px; color: var(--muted); }
+
+    .payment-details { 
+        margin-top: 15px; padding: 15px; border-top: 1px solid #d1d5db;
+        background: var(--card); border-radius: 8px; font-size: 14px;
+        line-height: 1.5;
+    }
+    .payment-details strong { display: block; margin-bottom: 8px; color: var(--text); }
+    .wallet-address { 
+        font-family: monospace; background: #f0f4f8; padding: 8px; 
+        border-radius: 6px; word-break: break-all; margin-top: 6px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .copy-btn { 
+        background: var(--primary); color: #fff; padding: 4px 8px; 
+        border: 0; border-radius: 4px; cursor: pointer; margin-left: 8px;
+    }
+    .contact-info a { color: var(--primary); font-weight: 600; }
+
+
+    /* Right Column: Summary */
+    .summary-card { 
+      background: var(--card); border-radius: 14px; padding: 24px; 
+      box-shadow: 0 10px 30px rgba(5,12,30,0.06); position: sticky; top: 20px;
+    }
+    .summary-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .summary-row.total { border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px; font-weight: 800; font-size: 18px; color: var(--primary); }
+    
+    .btn-finalize { display: block; width: 100%; background: var(--primary); color: #fff; text-align: center; padding: 14px; border-radius: 10px; font-weight: 700; margin-top: 20px; border: 0; cursor: pointer; transition: background .2s; }
+    .btn-finalize:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    @media(max-width: 800px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+    }
+    
+    /* Confirmation Modal */
+    .modal-overlay { 
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.7); display: none; justify-content: center; 
+      align-items: center; z-index: 1000;
+    }
+    .modal-content {
+      background: var(--card); padding: 40px; border-radius: 12px; 
+      max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal-content h3 { color: var(--primary); margin-top: 0; }
+    .btn-home { 
+      background: var(--primary); color: #fff; padding: 10px 20px; 
+      border-radius: 8px; margin-top: 20px; display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="logo">NL</div>
+    <div style="font-weight:700">Nassalab Checkout</div>
+  </div>
+</header>
+
+<div class="container">
+  <h1>Secure Checkout</h1>
+
+  <div id="loading" style="padding:40px;text-align:center;color:var(--muted)">Checking cart contents...</div>
+  
+  <div id="checkoutContent" class="checkout-layout" style="display:none">
+    
+    <div>
+      <div class="form-section">
+        <h2>1. Shipping Information</h2>
+        <form id="shippingForm">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Street Address</label>
+                <input type="text" id="address" required>
+            </div>
+             <div class="form-group">
+                <label for="address2">Apt, Suite, etc. (Optional)</label>
+                <input type="text" id="address2">
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">Postal/Zip Code</label>
+                    <input type="text" id="zip" required>
+                </div>
+            </div>
+             <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" id="country" required>
+            </div>
+            <div class="form-group">
+                <label for="notes">Order Notes (Optional)</label>
+                <textarea id="notes" rows="3" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-size:16px;"></textarea>
+            </div>
+        </form>
+      </div>
+
+      <div class="form-section">
+        <h2>2. Payment Method</h2>
+        <div class="payment-options">
+          
+          <div class="payment-method selected" data-method="BTC" onclick="selectPayment('BTC')">
+            <input type="radio" name="payment" value="BTC" checked>
+            <div class="method-title">Bitcoin (BTC)</div>
+            <div class="method-desc">Pay directly to our wallet. Instant processing.</div>
+            <div class="payment-details" id="details-BTC">
+                <strong>Transfer the final amount to this address:</strong>
+                <div class="wallet-address">
+                    <span id="btcAddress">1H7QyCp7Htpf329CEb2pzj6a4JYGHtm6bD</span>
+                    <button class="copy-btn" onclick="copyAddress('btcAddress', event)">Copy</button>
+                </div>
+                <p style="margin-top:10px;">**Important:** Send the **exact** final amount displayed to ensure proper order allocation.</p>
+            </div>
+          </div>
+          
+          <div class="payment-method" data-method="USDT" onclick="selectPayment('USDT')">
+            <input type="radio" name="payment" value="USDT">
+            <div class="method-title">USDT (Tether) - TRC20</div>
+            <div class="method-desc">Stablecoin payment. Fast and reliable (TRC20 network only).</div>
+            <div class="payment-details" id="details-USDT" style="display:none;">
+                <strong>Transfer the final amount to this address (TRC20 Network):</strong>
+                <div class="wallet-address">
+                    <span id="usdtAddress">TYVc7KwJUBEe2HMZkUyCRxMhtmQ1Ck5Ybd</span>
+                    <button class="copy-btn" onclick="copyAddress('usdtAddress', event)">Copy</button>
+                </div>
+                <p style="margin-top:10px;">**Important:** Use the **TRC20 (Tron)** network only. Send the **exact** final amount.</p>
+            </div>
+          </div>
+
+          <div class="payment-method" data-method="BankTransfer" onclick="selectPayment('BankTransfer')">
+            <input type="radio" name="payment" value="BankTransfer">
+            <div class="method-title">Bank Transfer / Zelle</div>
+            <div class="method-desc">For larger orders or specific regions.</div>
+            <div class="payment-details" id="details-BankTransfer" style="display:none;">
+                <strong>Contact Support to get payment details.</strong>
+                <p class="contact-info">
+                    Please use the **Live Chat Support** button (bottom right) or <a href="mailto:support@nassalab.com">email support@nassalab.com</a> after placing your order to receive banking details.
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-card">
+        <div class="summary-title">Order Summary</div>
+        
+        <div class="summary-row">
+          <span class="muted">Subtotal</span>
+          <span id="summarySubTotal">$0.00</span>
+        </div>
+        
+        <div class="summary-row" id="summaryDiscountRow" style="display:none;">
+          <span class="muted" style="color:#16a34a;">Discount (<span id="summaryDiscountPercent">0%</span>)</span>
+          <span id="summaryDiscountValue" style="color:#16a34a;">-$0.00</span>
+        </div>
+
+        <div class="summary-row">
+          <span class="muted">Shipping</span>
+          <span id="summaryShippingCost">Free</span>
+        </div>
+        
+        <div class="summary-row">
+          <span class="muted">Tax</span>
+          <span>$0.00</span>
+        </div>
+        
+        <div class="summary-row total">
+          <span>Final Total</span>
+          <span id="summaryFinalTotal">$0.00</span>
+        </div>
+        
+        <button class="btn-finalize" id="finalizeOrderBtn" onclick="finalizeOrder()">Place Order & Get Payment Details</button>
+        
+        <div style="margin-top:16px;font-size:12px;color:var(--muted);text-align:center;line-height:1.4">
+          By clicking 'Place Order', you agree to our Terms & Conditions.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="emptyCart" class="empty-state" style="padding:60px; text-align:center; display:none;">
+    <span style="font-size:48px;">🛑</span>
+    <h2>Your cart is empty!</h2>
+    <p>Please <a href="store.html" style="color:var(--primary); font-weight:600;">return to the store</a> to add items before checking out.</p>
+  </div>
+</div>
+
+<div id="confirmationModal" class="modal-overlay">
+  <div class="modal-content">
+    <h3>✅ Order Placed!</h3>
+    <p>Your order has been successfully placed.</p>
+    <p id="paymentConfirmationText"></p>
+    <p>Please follow the instructions shown on the page (or scroll down) to complete your payment.</p>
+    <a href="index.html" class="btn-home">Go to Homepage</a>
+  </div>
+</div>
+
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6935c9614699f5197df5035d/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<script>
+/* ------------------------------------------------
+   Checkout Logic (Shared Constants)
+   ------------------------------------------------ */
+
+const CART_KEY = 'nassalab_cart_v1';
+const SHIPPING_FEE = 60; 
+const PROMO_CODES = {
+  CALI20: 0.10, NEWGUY: 0.05, BOOST: 0.08, BOGO: 0.15,
+};
+const WALLET_ADDRESSES = {
+    BTC: '1H7QyCp7Htpf329CEb2pzj6a4JYGHtm6bD',
+    USDT: 'TYVc7KwJUBEe2HMZkUyCRxMhtmQ1Ck5Ybd'
+};
+
+let PRODUCTS = [];
+let CART_STATE = {
+  items: {},
+  isShippingRequired: false,
+  promoCode: null,
+};
+
+// --- Helper Functions (Copied from cart.html) ---
+function parsePrice(raw) {
+  if (typeof raw === 'number') return raw;
+  if (!raw) return 0;
+  return parseFloat(String(raw).replace(/[^0-9.]/g, '')) || 0;
+}
+
+function formatPrice(num) {
+  return '$' + Math.round(num).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function getDiscountPercentage(code) {
+    if (!code) return 0;
+    const upperCode = code.toUpperCase();
+    return PROMO_CODES[upperCode] || 0;
+}
+
+// --- Checkout Initialization ---
+
+async function initCheckout() {
+  try {
+    // 1. Load Cart State
+    const rawState = localStorage.getItem(CART_KEY);
+    const loadedState = rawState ? JSON.parse(rawState) : {};
+    
+    // Check for old cart format (just item:qty map)
+    if (!loadedState.items && rawState && rawState.startsWith('{') && !rawState.includes('isShippingRequired')) {
+      CART_STATE.items = loadedState; // Old format
+    } else {
+      CART_STATE = { ...CART_STATE, ...loadedState };
+    }
+    
+    // Check if cart is empty
+    const itemKeys = Object.keys(CART_STATE.items);
+    if (itemKeys.length === 0 || itemKeys.every(k => CART_STATE.items[k] <= 0)) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('emptyCart').style.display = 'block';
+        return;
+    }
+
+    // 2. Load Products (Only needed if we wanted to show item details, but primarily for calculation consistency)
+    const res = await fetch('products.json');
+    let data = await res.json();
+    if(data.products) data = data.products; 
+    PRODUCTS = Array.isArray(data) ? data : [];
+
+    // 3. Render Summary
+    renderSummary();
+    
+    // 4. Show content
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('checkoutContent').style.display = 'grid';
+
+    // 5. Update initial payment button text
+    selectPayment('BTC');
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loading').innerHTML = 'Error loading checkout data.';
+  }
+}
+
+// --- Summary Rendering & Calculation ---
+
+function calculateTotals() {
+    let subtotal = 0;
+    
+    // Calculate Subtotal
+    Object.keys(CART_STATE.items).forEach(id => {
+        const qty = CART_STATE.items[id];
+        if (qty <= 0) return;
+
+        const product = PRODUCTS.find(p => String(p.id) === id || p.slug === id);
+        if (product) {
+            const price = parsePrice(product.price);
+            subtotal += price * qty;
+        }
+    });
+
+    // Calculate Discount
+    const discountRate = getDiscountPercentage(CART_STATE.promoCode);
+    const discountValue = subtotal * discountRate;
+    const subtotalAfterDiscount = subtotal - discountValue;
+    
+    // Calculate Shipping
+    const shippingCost = CART_STATE.isShippingRequired ? SHIPPING_FEE : 0;
+    
+    // Final Total
+    const finalTotal = subtotalAfterDiscount + shippingCost; // Assuming 0 tax for now
+
+    return { subtotal, discountValue, discountRate, shippingCost, finalTotal };
+}
+
+
+function renderSummary() {
+    const totals = calculateTotals();
+
+    document.getElementById('summarySubTotal').textContent = formatPrice(totals.subtotal);
+    document.getElementById('summaryShippingCost').textContent = totals.shippingCost > 0 ? formatPrice(totals.shippingCost) : 'Free';
+    document.getElementById('summaryFinalTotal').textContent = formatPrice(totals.finalTotal);
+    
+    // Discount UI
+    const discountRow = document.getElementById('summaryDiscountRow');
+    if (totals.discountValue > 0) {
+        discountRow.style.display = 'flex';
+        document.getElementById('summaryDiscountPercent').textContent = `${Math.round(totals.discountRate * 100)}%`;
+        document.getElementById('summaryDiscountValue').textContent = `-${formatPrice(totals.discountValue)}`;
+    } else {
+        discountRow.style.display = 'none';
+    }
+}
+
+// --- Payment & Finalization ---
+
+let selectedPaymentMethod = 'BTC'; // Default selection
+
+window.selectPayment = function(method) {
+    selectedPaymentMethod = method;
+    
+    document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+        el.querySelector('input[type="radio"]').checked = false;
+        el.querySelectorAll('.payment-details').forEach(d => d.style.display = 'none');
+    });
+
+    const selectedEl = document.querySelector(`.payment-method[data-method="${method}"]`);
+    selectedEl.classList.add('selected');
+    selectedEl.querySelector('input[type="radio"]').checked = true;
+    document.getElementById(`details-${method}`).style.display = 'block';
+
+    const btn = document.getElementById('finalizeOrderBtn');
+    if (method === 'BankTransfer') {
+         btn.textContent = 'Place Order & Contact Support';
+    } else {
+         btn.textContent = 'Place Order & Get Payment Details';
+    }
+}
+
+window.finalizeOrder = function() {
+    const form = document.getElementById('shippingForm');
+    const totals = calculateTotals();
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    // 1. Gather all data (for a real backend submission, this would be an AJAX call)
+    const orderData = {
+        customer: {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+        },
+        shipping: {
+            address: document.getElementById('address').value,
+            address2: document.getElementById('address2').value,
+            city: document.getElementById('city').value,
+            zip: document.getElementById('zip').value,
+            country: document.getElementById('country').value,
+        },
+        cart: CART_STATE.items,
+        totals: totals,
+        paymentMethod: selectedPaymentMethod,
+        notes: document.getElementById('notes').value,
+    };
+    
+    console.log('--- Order Submission Data ---');
+    console.log(orderData);
+    
+    // 2. Display confirmation and instructions
+    let confirmationText = '';
+    
+    if (selectedPaymentMethod === 'BTC' || selectedPaymentMethod === 'USDT') {
+        confirmationText = `Your payment details for **${selectedPaymentMethod}** have been finalized. Please transfer ${formatPrice(totals.finalTotal)} to the address provided on the page.`;
+    } else { // BankTransfer
+        confirmationText = `Your order has been recorded. Please contact **Live Chat Support** or email to receive the bank transfer details for payment.`;
+    }
+    
+    document.getElementById('paymentConfirmationText').innerHTML = confirmationText;
+    document.getElementById('confirmationModal').style.display = 'flex';
+
+    // 3. Clear the Cart (Simulation of successful submission)
+    localStorage.removeItem(CART_KEY);
+    
+    // Optionally disable button to prevent double-submission
+    document.getElementById('finalizeOrderBtn').disabled = true;
+}
+
+window.copyAddress = function(id, event) {
+    event.stopPropagation(); // Prevent payment method selection
+    event.preventDefault();
+
+    const address = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = originalText; }, 1500);
+    }).catch(err => {
+        console.error('Copy failed:', err);
+    });
+}
+
+// Start
+initCheckout();
+
+</script>
+</body>
+</html>

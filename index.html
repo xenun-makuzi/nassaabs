@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nassalab — Home</title>
+  <meta name="description" content="Nassalab — Premium injectables, orals, PCT, peptides, SARMs and HGH. Discreet shipping, multiple payment options.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#0A66CC;
+      --bg:#f6fbff;
+      --card:#fff;
+      --muted:#6b7280;
+      --text:#0b1220;
+      --container:1180px;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:var(--container);margin:0 auto;padding:28px}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:999;background:rgba(255,255,255,0.96);backdrop-filter:blur(4px);border-bottom:1px solid rgba(7,22,42,0.04)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--container);margin:0 auto;padding:14px 18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,var(--primary),#075bb3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    nav.main{display:flex;gap:14px;align-items:center}
+    nav.main a{padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+    .nav-actions{display:flex;gap:12px;align-items:center}
+    .cart-btn{position:relative;background:transparent;border:1px solid rgba(7,22,42,0.06);padding:8px 10px;border-radius:10px;cursor:pointer}
+    .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--primary);color:#fff;padding:4px 7px;border-radius:999px;font-size:12px}
+
+    /* HERO (large background with dark overlay) */
+    .hero{
+      position:relative;
+      min-height:420px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      color:#fff;
+    }
+    .hero__bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:1;
+}
+
+    .hero__overlay{
+      position:absolute;inset:0;background:linear-gradient(180deg, rgba(2,12,30,0.55), rgba(2,12,30,0.25));
+    }
+    .hero-inner{position:relative;z-index:3;max-width:var(--container);width:100%;padding:48px 24px;display:flex;gap:24px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .hero-copy{max-width:720px}
+    .hero h1{font-size:34px;margin:0 0 8px 0;line-height:1.03;font-weight:700}
+    .hero p{margin:0 0 14px 0;color:rgba(255,255,255,0.95)}
+    .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%;min-width:0}
+    .search{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,0.98);padding:8px;border-radius:12px;box-shadow:0 8px 30px rgba(3,12,30,0.12);flex:1 1 420px;min-width:220px;max-width:820px;position:relative}
+    .search input{flex:1;border:0;padding:12px;border-radius:10px;font-size:15px;min-width:0}
+    .search button{background:var(--primary);color:#fff;padding:10px 14px;border:0;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn-store{background:transparent;color:#fff;padding:10px 14px;border-radius:10px;font-weight:800;border:2px solid rgba(255,255,255,0.12);cursor:pointer}
+    .hint{margin-top:8px;color:rgba(255,255,255,0.95);font-size:13px;width:100%}
+
+    /* Autosuggest (fixed so not clipped by hero) */
+    .suggest-list{position:fixed;z-index:2200;background:#fff;border-radius:10px;box-shadow:0 18px 48px rgba(3,12,30,0.18);overflow:auto;max-height:55vh;visibility:hidden}
+    .suggest-item{display:flex;gap:12px;padding:10px;align-items:center;cursor:pointer;border-bottom:1px solid #f2f7ff}
+    .suggest-item img{width:64px;height:44px;object-fit:cover;border-radius:6px}
+    .suggest-name{font-weight:700}
+    .suggest-muted{color:var(--muted);font-size:13px}
+
+    /* CATEGORIES carousel */
+    .categories{padding:28px 0}
+    .cats-track{display:flex;gap:18px;align-items:center;overflow:hidden;padding-bottom:6px;scroll-behavior:smooth}
+    .cat-item{flex:0 0 auto;width:110px;height:140px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;cursor:pointer;text-align:center}
+    .cat-circle{width:88px;height:88px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 6px 18px rgba(10,40,80,0.06)}
+    .cat-circle img{width:100%;height:100%;object-fit:cover;display:block}
+    .cat-label{margin-top:8px;font-size:13px;color:#0c2340;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+    /* Featured / grid */
+    .section{padding:24px 0}
+    .section .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    /* Updated to 5 products - using flex wrap for cleaner presentation if it's not exactly 4 */
+    .product-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px}
+    .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(5,12,30,0.06);display:flex;flex-direction:column;transition:transform .18s ease}
+    .card:hover{transform:translateY(-6px)}
+    .visual{position:relative;flex:1;min-height:180px;background:#f2f6fb;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .visual img{width:100%;height:100%;object-fit:cover;display:block}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(10,20,40,0.02))}
+    .product-name{font-weight:700;font-size:14px;color:var(--text);text-align:left;line-height:1.3}
+    .product-actions{display:flex;gap:8px;align-items:center}
+    .price{font-weight:800;color:var(--primary)}
+    .btn-add{background:var(--primary);color:#fff;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+
+    /* Why + Touchdown */
+    .why{padding:22px;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(5,12,30,0.04);margin-bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center}
+    .why-card{display:flex;gap:12px;align-items:center}
+    .why-card img{width:96px;height:72px;object-fit:cover;border-radius:8px}
+    .why-list{padding-left:8px}
+    
+    /* Touchdown Gallery (Updated for 6 images in 3 columns) */
+    .touchdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    .touchdown img {width:100%; height: 200px; object-fit: cover; border-radius: 12px; box-shadow:0 4px 12px rgba(5,12,30,0.08);}
+
+    /* Picture Reviews Grid (3 columns) */
+    #pictureReviewsGrid{
+        display:grid; grid-template-columns:repeat(3, 1fr); gap: 12px;
+    }
+    #pictureReviewsGrid img {
+        width:100%; height: 220px; object-fit:cover; border-radius:10px; box-shadow:0 4px 12px rgba(5,12,30,0.1);
+    }
+    
+    /* Reviews + FAQ */
+    .reviews{padding:30px 0}
+    .review-card{background:#fff;border-radius:12px;padding:22px;box-shadow:0 12px 34px rgba(5,12,30,0.06);text-align:center}
+    .stars{color:#fbbf24;margin-bottom:8px}
+    .faq{padding:28px 0}
+    .faq-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+
+    /* Footer */
+    footer{margin-top:28px;background:#eaf6ff;padding:22px;border-top:1px solid rgba(7,22,42,0.04)}
+    .footer-inner{max-width:var(--container);margin:0 auto;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+    .footer-col{flex:1;min-width:180px}
+    .footer-col h4{margin:0 0 10px 0}
+    .footer-col ul{margin:0;padding-left:18px}
+    .footer-bottom{margin-top:18px;text-align:center;color:#05324a;padding-top:8px}
+
+    /* Responsive */
+    @media(max-width:1024px){.product-grid{grid-template-columns:repeat(2,1fr)}.cat-circle{width:72px;height:72px}.cat-item{width:110px;height:130px}.hero h1{font-size:26px}}
+    @media (max-width:768px){
+      .touchdown, #pictureReviewsGrid {grid-template-columns:repeat(2,1fr);}
+    }
+    @media (max-width:640px){
+      .hero-inner{padding:24px}
+      .hero h1{font-size:20px}
+      .product-grid{grid-template-columns:repeat(2,1fr)}
+      .why{grid-template-columns:1fr}
+      .suggest-list{max-height:50vh}
+    }
+  </style>
+</head>
+<body>
+
+<header id="topbar" role="banner">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="logo">NL</div>
+      <div>
+        <div style="font-weight:700">Nassalab</div>
+        <div style="font-size:12px;color:var(--muted)">Nassa Labs: Home</div>
+      </div>
+    </div>
+
+    <nav class="main" role="navigation" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="store.html" aria-current="page" style="color:var(--primary);font-weight:700">Store</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="cart-btn" aria-label="View cart" onclick="location.href='cart.html'">🛒 <span id="cartCount" class="cart-badge">0</span></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-label="Hero">
+  <video class="hero__bg" autoplay muted loop playsinline>
+    <source src="bk.mp4" type="video/mp4"> 
+    Your browser does not support the video tag.
+  </video>
+  <div class="hero__overlay" aria-hidden="true"></div>
+
+  <div class="hero-inner container">
+    <div class="hero__overlay" aria-hidden="true"></div>
+
+    <div class="hero-inner container">
+      <div class="hero-copy">
+        <h1>Trusted Steroids & PCT — Lab-minded quality, discreet worldwide delivery</h1>
+        <p>Pharmaceutical-grade products, discreet packaging, multiple payment options — trusted by pros.</p>
+
+        <div style="margin-top:10px" class="search-row">
+          <div class="search" role="search" aria-label="Search products">
+            <input id="searchInput" placeholder="Search products, strength (mg/ml) or SKU…" aria-label="Search products" autocomplete="off" />
+            <button id="searchBtn" aria-label="Search">Search</button>
+          </div>
+
+          <button class="btn-store" onclick="location.href='store.html'">STORE</button>
+          <div class="hint">Discreet shipping • Secure payments • Fast dispatch</div>
+        </div>
+      </div>
+
+      <div style="min-width:260px;align-self:center">
+        <div style="background:rgba(255,255,255,0.06);padding:12px;border-radius:10px;text-align:center">
+          <div style="font-weight:700;font-size:20px">Fast Dispatch</div>
+          <div class="muted" style="margin-top:6px">Discreet & insured shipping</div>
+        </div>
+      </div>
+
+      <div id="suggest" class="suggest-list" role="listbox" aria-label="Search suggestions"></div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="categories" aria-label="Categories">
+      <h2>Shop by category</h2>
+      <div id="catsTrack" class="cats-track" role="list" tabindex="0" aria-label="Categories carousel"></div>
+      <small class="muted">Swipe to browse categories • Tap to open</small>
+    </section>
+
+    <section id="store" class="section" aria-label="Featured products">
+      <div class="section-head">
+        <h2>Featured Products</h2>
+        <a href="store.html" class="muted">View all</a>
+      </div>
+      <div id="productGrid" class="product-grid" aria-live="polite"></div>
+      <div style="text-align:center; margin-top: 20px;">
+         <a href="store.html" class="btn-store" style="background: var(--primary); color: #fff; padding: 10px 20px; border: none;">View All Products</a>
+      </div>
+    </section>
+
+    <section class="why" aria-label="Why choose us">
+      <div class="why-card">
+        <img src="phar.jpg" alt="Quality control">
+        <div class="why-list">
+          <h3>Pharmaceutical standards</h3>
+          <p class="muted" style="margin:6px 0 0 0">Third-party batch testing & strict quality control for consistent potency.</p>
+        </div>
+      </div>
+      <div class="why-card">
+        <img src="ship.jpg" alt="Discreet shipping">
+        <div class="why-list">
+          <h3>Discrete & reliable shipping</h3>
+          <p class="muted" style="margin:6px 0 0 0">Unbranded packages, flexible shipping options, and tracking available.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Picture Reviews">
+      <h2 style="text-align:center; margin-bottom: 20px;">Customer Photo Reviews</h2>
+      <div id="pictureReviewsGrid">
+        <img src="pic1.jpg" alt="Customer review photo 1">
+        <img src="pic2.jpg" alt="Customer review photo 2">
+        <img src="pic3.jpg" alt="Customer review photo 3">
+        <img src="pic4.jpg" alt="Customer review photo 4">
+        <img src="pic5.jpg" alt="Customer review photo 5">
+        <img src="pic6.jpg" alt="Customer review photo 6">
+      </div>
+    </section>
+    <section aria-label="Touchdown">
+      <h2>Touchdown — Customers receiving orders</h2>
+      <div class="touchdown" id="touchdownGrid" style="margin-top:10px">
+        <img src="tf1.jpg" alt="Touchdown photo 1">
+        <img src="tf2.jpg" alt="Touchdown photo 2">
+        <img src="tf3.jpg" alt="Touchdown photo 3">
+        <img src="tf4.jpg" alt="Touchdown photo 4">
+        <img src="tf5.jpg" alt="Touchdown photo 5">
+        <img src="tf6.jpg" alt="Touchdown photo 6">
+      </div>
+    </section>
+
+    <section class="reviews" aria-label="Customer reviews">
+      <h2 style="text-align:center;margin-bottom:12px">Customer Reviews</h2>
+      <div class="review-wrap" id="reviewWrap">
+        <div class="review-card" id="reviewCard" role="article" aria-live="polite"></div>
+        <div class="review-controls" style="margin-top:14px;display:flex;justify-content:center;gap:12px">
+          <button class="rc-btn" id="revPrev" aria-label="Previous review">◀</button>
+          <button class="rc-btn" id="revNext" aria-label="Next review">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" aria-label="FAQ" style="margin-top:18px">
+      <h2>Frequently Asked Questions</h2>
+      <div class="faq-grid" id="faqGrid">
+        <div class="faq-item" tabindex="0"><div class="faq-question"><span>Do you ship discreetly?</span><span aria-hidden="true">+</span></div><div class="faq-answer">Yes. Unbranded parcels and separate tracking.</div></div>
+        <div class="faq-item" tabindex="0"><div class="faq-question"><span>What payment methods?</span><span aria-hidden="true">+</span></div><div class="faq-answer">Crypto (BTC/ETH/USDT), card, bank transfer.</div></div>
+        <div class="faq-item" tabindex="0"><div class="faq-question"><span>How long delivery?</span><span aria-hidden="true">+</span></div><div class="faq-answer">Typically 5–12 business days depending on destination.</div></div>
+        <div class="faq-item" tabindex="0"><div class="faq-question"><span>Do you require prescriptions?</span><span aria-hidden="true">+</span></div><div class="faq-answer">Check local laws — we provide product information for educational purposes.</div></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h4><a href="index.html">Nassalab</a></h4>
+      <div class="muted" style="margin-top:8px">Sama Labs — Premium quality & discreet delivery</div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="store.html?category=Injectable%20Steroids">Injectable Steroids</a></li>
+        <li><a href="store.html?category=Oral%20Steroids">Oral Steroids</a></li>
+        <li><a href="store.html?category=Post%20Cycle%20Therapy%20%26%20Ancillaries">PCT & Ancillaries</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="shipping.html">Shipping</a></li>
+        <li><a href="refunds.html">Refunds</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:support@nassalab.org">support@nassalab.org</a></li>
+        <li class="muted">Accepted: BTC • ETH • USDT • Card • Bank</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© <span id="year"></span> Nassalab — All rights reserved</div>
+</footer>
+
+<script>
+/* =========================
+   JS: loader, UI, interactions
+   =========================*/
+
+/* Utility helpers */
+function slugify(s){ return String(s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^\w\-]+/g,'').replace(/\-\-+/g,'-').replace(/^-+|-+$/g,''); }
+function parsePriceValue(raw){
+  if(typeof raw === 'number' && Number.isFinite(raw)) return Number(raw);
+  if(!raw) return 0;
+  const s = String(raw).trim();
+  const cleaned = s.replace(/[^0-9\.\-]/g,'').replace(/,+/g,'');
+  const v = parseFloat(cleaned);
+  return Number.isFinite(v) ? v : 0;
+}
+function formatCurrencyRounded(n, rawString='USD'){
+  // round to nearest whole number (user requested no decimals)
+  const val = Math.round(Number(n || 0));
+  // crude currency detection by symbol
+  if(String(rawString).includes('€')) return '€' + val;
+  if(String(rawString).includes('£')) return '£' + val;
+  return '$' + val;
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+/* images normalization: accepts array or {front,back} or numeric keys */
+function normalizeImagesForProduct(p){
+  if(!p) return [];
+  if(!p.images) return [];
+  if(Array.isArray(p.images)) return p.images.map(String).filter(Boolean);
+  if(typeof p.images === 'object'){
+    const arr = [];
+    if(p.images.front) arr.push(String(p.images.front));
+    if(p.images.back) arr.push(String(p.images.back));
+    // numeric keys support
+    Object.keys(p.images).sort().forEach(k => { if(!isNaN(k)) arr.push(String(p.images[k])); });
+    return arr.filter(Boolean);
+  }
+  return [String(p.images)].filter(Boolean);
+}
+function getFirstImageForProduct(p){ const arr = normalizeImagesForProduct(p); return (arr && arr.length) ? arr[0] : 'assets/placeholder.jpg'; }
+
+/* App state */
+let PRODUCTS = [];
+let CATEGORIES = [];
+const PAGE_SIZE = 20;
+let currentPage = 1;
+let FILTERED = [];
+
+/* DOM refs */
+const catsTrack = document.getElementById('catsTrack');
+const productGrid = document.getElementById('productGrid');
+const suggest = document.getElementById('suggest');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const cartCountEl = document.getElementById('cartCount');
+const yearEl = document.getElementById('year');
+
+yearEl.textContent = new Date().getFullYear();
+
+/* Load products.json robustly */
+async function loadProducts(){
+  try {
+    const res = await fetch('./products.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('Network ' + res.status);
+    let data;
+    try {
+      data = await res.json();
+    } catch (err) {
+      const txt = await res.text();
+      let cleaned = txt.replace(/^\uFEFF/, '').replace(/,\s*([\]}])/g,'$1').trim();
+      data = JSON.parse(cleaned);
+    }
+    if(!Array.isArray(data) && data && data.products) data = data.products;
+    if(!Array.isArray(data)) data = [];
+    PRODUCTS = data.map(p => {
+      p._price = parsePriceValue(p.price ?? p._price ?? 0);
+      p.images = normalizeImagesForProduct(p);
+      if(!p.slug && p.name) p.slug = slugify(p.name);
+      return p;
+    });
+    buildCategories();
+    renderCategoriesCarousel();
+    renderProducts(); // initial featured product grid (limited to 5)
+    wireSearch();
+    populateReviews();
+    initFAQ();
+    syncCartCountFromStorage();
+  } catch(e){
+    console.error('Failed to load products.json', e);
+    productGrid.innerHTML = '<div style="padding:24px;background:#fff;border-radius:8px;color:#b00">Failed to load product data. See console.</div>';
+  }
+}
+
+/* Build categories list */
+function buildCategories(){
+  const map = {};
+  PRODUCTS.forEach(p => {
+    const c = p.category || 'Other';
+    if(!map[c]) map[c] = {name:c, slug:slugify(c), count:0, exampleImg: getFirstImageForProduct(p)};
+    map[c].count++;
+    if(!map[c].exampleImg && p.images && p.images[0]) map[c].exampleImg = p.images[0];
+  });
+  CATEGORIES = Object.values(map).sort((a,b)=>b.count-a.count);
+}
+
+/* Render categories carousel and enable auto scroll + drag */
+function renderCategoriesCarousel(){
+  catsTrack.innerHTML = '';
+  if(!CATEGORIES.length){
+    catsTrack.innerHTML = '<div class="muted">No categories</div>';
+    return;
+  }
+  CATEGORIES.forEach(cat => {
+    const item = document.createElement('div');
+    item.className = 'cat-item';
+    item.innerHTML = `<div class="cat-circle"><img src="${escapeHtml(cat.exampleImg || 'assets/placeholder_cat.jpg')}" alt="${escapeHtml(cat.name)}"></div><div class="cat-label">${escapeHtml(cat.name)}</div>`;
+    item.addEventListener('click', ()=> {
+      // open store filtered by category (keeps the store page)
+      const url = new URL(location.href);
+      url.pathname = url.pathname.replace(/[^/]*$/, 'store.html');
+      url.searchParams.set('category', cat.name);
+      location.href = url.toString();
+    });
+    catsTrack.appendChild(item);
+  });
+  // duplicate children for seamless scroll
+  const children = Array.from(catsTrack.children);
+  children.forEach(ch => catsTrack.appendChild(ch.cloneNode(true)));
+  enableAutoScroll(catsTrack);
+  enableDragScroll(catsTrack);
+}
+
+/* Auto scroll for carousel */
+function enableAutoScroll(track){
+  let running = true, speed = 0.6;
+  function step(){
+    if(running){
+      track.scrollLeft += speed;
+      const half = track.scrollWidth/2;
+      if(track.scrollLeft >= half) track.scrollLeft -= half;
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+  track.addEventListener('mouseenter', ()=> running=false);
+  track.addEventListener('mouseleave', ()=> running=true);
+  track.addEventListener('touchstart', ()=> running=false, {passive:true});
+  track.addEventListener('touchend', ()=> running=true, {passive:true});
+}
+
+/* Drag/Touch scroll */
+function enableDragScroll(el){
+  let active=false, startX=0, startScroll=0;
+  el.addEventListener('mousedown', e=>{ active=true; startX = e.pageX - el.offsetLeft; startScroll = el.scrollLeft; el.style.cursor='grabbing'; e.preventDefault(); });
+  el.addEventListener('mouseup', ()=>{ active=false; el.style.cursor=''; });
+  el.addEventListener('mouseleave', ()=>{ active=false; el.style.cursor=''; });
+  el.addEventListener('mousemove', e=>{ if(!active) return; const x = e.pageX - el.offsetLeft; const walk = x - startX; el.scrollLeft = startScroll - walk; });
+  el.addEventListener('touchstart', e=>{ active=true; startX = e.touches[0].pageX - el.offsetLeft; startScroll = el.scrollLeft; }, {passive:true});
+  el.addEventListener('touchmove', e=>{ if(!active) return; const x = e.touches[0].pageX - el.offsetLeft; const walk = x - startX; el.scrollLeft = startScroll - walk; }, {passive:true});
+  el.addEventListener('touchend', ()=> active=false);
+}
+
+/* Filtering, sorting & pagination helpers */
+function getUrlFilters(){
+  const params = new URLSearchParams(location.search);
+  return {
+    category: params.get('category') || '',
+    search: params.get('search') || '',
+    sort: params.get('sort') || '',
+    page: Number(params.get('page') || '1')
+  };
+}
+function applyFiltersFromUrl(){
+  const f = getUrlFilters();
+  currentPage = f.page || 1;
+  // filter, sort applied in renderProducts using query input if provided
+  if(f.search) searchInput.value = f.search;
+}
+
+/* Render products (with paging) */
+function renderProducts(){
+  applyFiltersFromUrl();
+  // build filtered list from UI (search input)
+  const q = (searchInput.value || '').trim().toLowerCase();
+  const urlParams = new URLSearchParams(location.search);
+  const category = urlParams.get('category') || '';
+
+  let list = PRODUCTS.slice().filter(p=>{
+    const hay = ((p.name||'') + ' ' + (p.short_description||'') + ' ' + (p.description||'') + ' ' + (p.category||'')).toLowerCase();
+    const matchSearch = q ? hay.includes(q) : true;
+    const matchCat = category ? p.category === category : true;
+    return matchSearch && matchCat;
+  });
+
+  // Sorting: keep default order but allow query sort param
+  const sort = urlParams.get('sort') || '';
+  if(sort === 'price-asc') list.sort((a,b)=>a._price - b._price);
+  else if(sort === 'price-desc') list.sort((a,b)=>b._price - a._price);
+  else if(sort === 'name-asc') list.sort((a,b)=> (a.name||'').localeCompare(b.name||''));
+
+  FILTERED = list;
+  
+  // --- START FEATURED LIMIT MODIFICATION (index.html only) ---
+  const featuredLimit = 5;
+  const pageList = list.slice(0, featuredLimit);
+  // --- END FEATURED LIMIT MODIFICATION ---
+
+  // NOTE: Pagination logic (total pages, current page, renderPager call) removed 
+  // because this is the featured section on the index page, which does not paginate.
+
+  productGrid.innerHTML = '';
+  if(pageList.length === 0){
+    productGrid.innerHTML = '<div style="padding:18px;background:#fff;border-radius:10px">No featured products found.</div>';
+    return;
+  }
+
+  pageList.forEach(p => {
+    const img = getFirstImageForProduct(p);
+    const card = document.createElement('article');
+    card.className = 'card';
+    // clickable area navigates to product page
+    card.innerHTML = `
+      <div class="visual"><img loading="lazy" src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}"></div>
+      <div class="card-footer">
+        <div style="max-width:64%"><div class="product-name">${escapeHtml(p.name)}</div></div>
+        <div class="product-actions">
+          <div class="price">${formatCurrencyRounded(p._price, p.price)}</div>
+          <button class="btn-add" data-id="${p.id}" aria-label="Add ${escapeHtml(p.name)}">Add</button>
+        </div>
+      </div>
+    `;
+    // navigate to product page when clicking the card (but not the add btn)
+    card.addEventListener('click', (e) => {
+      if(e.target.closest('.btn-add')) return; // handled by add button
+      location.href = `product.html?slug=${encodeURIComponent(p.slug)}`;
+    });
+    // add button
+    card.querySelector('.btn-add').addEventListener('click', (ev) => {
+      ev.preventDefault(); ev.stopPropagation();
+      addToCart(p.id);
+      const btn = ev.currentTarget;
+      btn.textContent = 'Added';
+      setTimeout(()=> btn.textContent = 'Add', 800);
+    });
+    productGrid.appendChild(card);
+  });
+}
+
+/* render pager (removed from renderProducts, kept here for completeness if store.html needs it) */
+function renderPager(total, totalPages){
+  const pagerHtml = document.getElementById('pageIndicator') || null;
+  const pagerEl = document.getElementById('pager');
+  if(!pagerEl) return;
+  if(totalPages <= 1){
+    pagerEl.style.display = 'none';
+    return;
+  }
+  pagerEl.style.display = 'flex';
+  document.getElementById('pageIndicator').textContent = `Page ${currentPage} / ${totalPages}`;
+  document.getElementById('prevPage').onclick = ()=>{ if(currentPage>1){ currentPage--; updateUrlPage(); renderProducts(); window.scrollTo({top:200,behavior:'smooth'}); }};
+  document.getElementById('nextPage').onclick = ()=>{ if(currentPage<totalPages){ currentPage++; updateUrlPage(); renderProducts(); window.scrollTo({top:200,behavior:'smooth'}); }};
+}
+
+/* update page param in URL without reloading */
+function updateUrlPage(){
+  const url = new URL(location.href);
+  url.searchParams.set('page', String(currentPage));
+  history.replaceState(null, '', url.toString());
+}
+
+/* Add to cart (localStorage) */
+function addToCart(id){
+  const key = 'nassalab_cart_v1';
+  const raw = localStorage.getItem(key);
+  const cart = raw ? JSON.parse(raw) : {};
+  cart[id] = (cart[id]||0) + 1;
+  localStorage.setItem(key, JSON.stringify(cart));
+  syncCartCountFromStorage();
+}
+function syncCartCountFromStorage(){
+  const key = 'nassalab_cart_v1';
+  const raw = localStorage.getItem(key);
+  const cart = raw ? JSON.parse(raw) : {};
+  const count = Object.values(cart).reduce((s,n)=> s + (Number(n)||0), 0);
+  cartCountEl.textContent = count;
+}
+window.addEventListener('storage', (e)=>{ if(e.key === 'nassalab_cart_v1') syncCartCountFromStorage(); });
+
+/* --------------------------
+   Search & autosuggest
+   --------------------------*/
+function wireSearch(){
+  function positionSuggest(){
+    const rect = searchInput.getBoundingClientRect();
+    suggest.style.left = rect.left + 'px';
+    suggest.style.top = (rect.bottom + 8) + 'px';
+    suggest.style.width = rect.width + 'px';
+    suggest.style.visibility = suggest.innerHTML.trim() ? 'visible' : 'hidden';
+  }
+
+  searchInput.addEventListener('input', (e)=>{
+    const q = e.target.value.trim().toLowerCase();
+    if(!q){ suggest.style.visibility='hidden'; suggest.innerHTML=''; return; }
+    const matches = PRODUCTS.filter(p => ((p.name||'') + ' ' + (p.short_description||'') + ' ' + (p.category||'')).toLowerCase().includes(q)).slice(0,8);
+    if(!matches.length){ suggest.style.visibility='hidden'; suggest.innerHTML=''; return; }
+    suggest.innerHTML = matches.map(m => `
+      <div class="suggest-item" role="option" tabindex="0" data-slug="${encodeURIComponent(m.slug)}">
+        <img src="${escapeHtml(getFirstImageForProduct(m))}" alt="${escapeHtml(m.name)}">
+        <div>
+          <div class="suggest-name">${escapeHtml(m.name)}</div>
+          <div class="suggest-muted">${formatCurrencyRounded(m._price, m.price)} • ${escapeHtml(m.category||'')}</div>
+        </div>
+      </div>
+    `).join('');
+    positionSuggest();
+  });
+
+  // click suggestion
+  suggest.addEventListener('click', (ev)=> {
+    const item = ev.target.closest('.suggest-item');
+    if(!item) return;
+    const slug = decodeURIComponent(item.dataset.slug);
+    window.location.href = `product.html?slug=${encodeURIComponent(slug)}`;
+  });
+
+  document.addEventListener('click', (e)=> {
+    if(!e.target.closest('.search') && !e.target.closest('.suggest-list')) {
+      suggest.style.visibility='hidden';
+    }
+  });
+
+  // search button -> go to store with query
+  searchBtn.addEventListener('click', ()=> {
+    const q = searchInput.value.trim();
+    if(!q) return;
+    const url = new URL(location.href);
+    url.pathname = url.pathname.replace(/[^/]*$/, 'store.html');
+    url.searchParams.set('search', q);
+    url.searchParams.delete('page');
+    location.href = url.toString();
+  });
+
+  // reposition on resize & scroll
+  window.addEventListener('resize', ()=>{ if(suggest.innerHTML.trim()) { const r = searchInput.getBoundingClientRect(); suggest.style.left = r.left + 'px'; suggest.style.top = (r.bottom+8) + 'px'; suggest.style.width = r.width + 'px'; }});
+  window.addEventListener('scroll', ()=>{ if(suggest.innerHTML.trim()) positionSuggest(); });
+
+  // quick-enter handler
+  searchInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); searchBtn.click(); }});
+}
+
+/* Reviews (demo) */
+const REVIEWS = [
+  {name:'A. K.', rating:5, text:'Fast delivery and great quality. Highly recommended!'},
+  {name:'B. J.', rating:5, text:'Discreet packaging, product as described.'},
+  {name:'C. S.', rating:5, text:'Good customer support and quick response.'}
+];
+let reviewIndex = 0, reviewTimer = null;
+function renderReview(i){
+  const r = REVIEWS[i];
+  const stars = '★'.repeat(r.rating) + '☆'.repeat(5-r.rating);
+  document.getElementById('reviewCard').innerHTML = `<div class="stars">${stars}</div><div style="font-weight:700;margin-bottom:8px">${r.name}</div><div class="muted">${r.text}</div>`;
+}
+document.getElementById('revNext').addEventListener('click', ()=>{ reviewIndex=(reviewIndex+1)%REVIEWS.length; renderReview(reviewIndex); resetReviewTimer(); });
+document.getElementById('revPrev').addEventListener('click', ()=>{ reviewIndex=(reviewIndex-1+REVIEWS.length)%REVIEWS.length; renderReview(reviewIndex); resetReviewTimer(); });
+function startReviewTimer(){ reviewTimer=setInterval(()=>{ reviewIndex=(reviewIndex+1)%REVIEWS.length; renderReview(reviewIndex); }, 6000); }
+function resetReviewTimer(){ clearInterval(reviewTimer); startReviewTimer(); }
+function populateReviews(){ renderReview(0); startReviewTimer(); }
+
+/* FAQ */
+function initFAQ(){
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.addEventListener('click', ()=> {
+      const open = item.querySelector('.faq-answer').style.display === 'block';
+      document.querySelectorAll('.faq-answer').forEach(a=>a.style.display='none');
+      if(!open) item.querySelector('.faq-answer').style.display = 'block';
+    });
+    item.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }});
+  });
+}
+
+/* Sync cart badge on load */
+function syncCartCountFromStorage(){ const key='nassalab_cart_v1'; const raw=localStorage.getItem(key); const cart = raw ? JSON.parse(raw) : {}; const count = Object.values(cart).reduce((s,n)=>s + (Number(n)||0), 0); cartCountEl.textContent = count; }
+
+/* Wire up initial events + load products */
+window.addEventListener('load', ()=>{ loadProducts(); wireSearch(); syncCartCountFromStorage(); });
+
+// expose renderProducts for external nav changes
+window.renderProducts = renderProducts;
+</script>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6935c9614699f5197df5035d/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+</body>
+</html>

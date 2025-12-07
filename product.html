@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product — Nassalab</title>
+  <meta name="description" content="Product detail page — Nassalab" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#0A66CC; --bg:#f6fbff; --card:#fff; --muted:#6b7280; --text:#0b1220; --container:1000px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:var(--bg);color:var(--text)}
+    a{color:inherit}
+    .container{max-width:var(--container);margin:28px auto;padding:18px}
+    .backlink{margin-bottom:12px;display:inline-block;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:1fr 380px;gap:20px}
+    .gallery{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(5,12,30,0.06)}
+    .main-image{width:100%;height:520px;border-radius:10px;overflow:hidden;background:#f5f7fb;display:flex;align-items:center;justify-content:center}
+    .main-image img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+    .thumbs{display:flex;gap:8px;margin-top:12px;justify-content:flex-start;flex-wrap:wrap}
+    .thumbs img{width:92px;height:72px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent}
+    .thumbs img.active{border-color:var(--primary)}
+    aside.meta{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(5,12,30,0.06)}
+    .meta h1{font-size:20px;margin:0 0 8px 0}
+    .muted{color:var(--muted)}
+    .price{font-weight:800;color:var(--primary);font-size:20px;margin-top:8px}
+    .desc{margin-top:12px;line-height:1.5;color:#22303a}
+    .btn-add{margin-top:16px;background:var(--primary);color:#fff;padding:10px 14px;border:0;border-radius:10px;cursor:pointer;font-weight:700}
+    .similar{margin-top:18px}
+    .similar-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .similar-grid a{display:flex;gap:8px;align-items:center;padding:8px;background:#fff;border-radius:8px;text-decoration:none;color:var(--text);box-shadow:0 6px 18px rgba(5,12,30,0.04)}
+    .similar-grid img{width:64px;height:48px;object-fit:cover;border-radius:6px}
+    @media(max-width:900px){ .layout{grid-template-columns:1fr} .main-image{height:320px} .meta{order:2} }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <a href="index.html" class="backlink">← Back to home</a>
+
+    <div id="content" class="layout" aria-live="polite">
+      <div class="gallery" id="galleryWrap" aria-label="Product images">
+        <div class="main-image" id="mainImageWrap" role="img" aria-label="Product image">
+          <img id="mainImage" alt="Product image">
+        </div>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+
+      <aside class="meta" id="meta">
+        <div id="metaHead">
+          <h1 id="productName">Product name</h1>
+          <div id="productCategory" class="muted"></div>
+          <div id="productPrice" class="price" aria-live="polite"></div>
+        </div>
+
+        <div class="desc" id="productDesc"></div>
+        <button id="addToCart" class="btn-add">Add to cart</button>
+
+        <div class="similar" id="similarWrap" aria-label="Similar products">
+          <strong>Similar products</strong>
+          <div class="similar-grid" id="similarGrid"></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+/* ---------------------------
+  Utilities
+----------------------------*/
+function qs(q){ return document.querySelector(q); }
+function qsa(q){ return Array.from(document.querySelectorAll(q)); }
+function getQueryParam(name){
+  const params = new URLSearchParams(location.search);
+  return params.get(name);
+}
+function slugify(s){ return String(s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^\w\-]+/g,'').replace(/\-\-+/g,'-').replace(/^-+|-+$/g,''); }
+function parsePriceValue(raw){
+  if(typeof raw === 'number' && Number.isFinite(raw)) return Number(raw);
+  if(!raw) return 0;
+  const s = String(raw).trim();
+  const cleaned = s.replace(/[^0-9\.\-]/g,'').replace(/,+/g,'');
+  const v = parseFloat(cleaned);
+  return Number.isFinite(v) ? v : 0;
+}
+function detectCurrency(raw){
+  if(!raw) return 'USD';
+  if(String(raw).includes('€')) return 'EUR';
+  if(String(raw).includes('£')) return 'GBP';
+  return 'USD';
+}
+function formatCurrency(n, currency='USD'){
+  const val = Number(n||0).toFixed(2);
+  if(currency === 'EUR') return '€' + val;
+  if(currency === 'GBP') return '£' + val;
+  return '$' + val;
+}
+
+/* ---------------------------
+  State & DOM refs
+----------------------------*/
+const slug = getQueryParam('slug') || getQueryParam('id') || location.hash.replace('#','').split('=')[1];
+const mainImage = qs('#mainImage');
+const thumbsWrap = qs('#thumbs');
+const productName = qs('#productName');
+const productCategory = qs('#productCategory');
+const productPrice = qs('#productPrice');
+const productDesc = qs('#productDesc');
+const addToCartBtn = qs('#addToCart');
+const similarGrid = qs('#similarGrid');
+
+let PRODUCTS = [];
+let CURRENT_PRODUCT = null;
+let images = []; // array of image URLs for current product
+let currentIndex = 0;
+let CART = {};
+
+/* ---------------------------
+  Load products.json, find product by slug, render
+----------------------------*/
+async function loadAndRender(){
+  try{
+    const res = await fetch('./products.json', {cache:'no-store'});
+    PRODUCTS = await res.json();
+
+    // normalize each product (price numeric, images array)
+    PRODUCTS = PRODUCTS.map(p=>{
+      p._price = parsePriceValue(p.price ?? p._price ?? 0);
+      // normalize images: support array OR {front:..., back:...}
+      if(!p.images) p.images = [];
+      else if(!Array.isArray(p.images)){
+        if(p.images.front || p.images.back){
+          const arr = [];
+          if(p.images.front) arr.push(p.images.front);
+          if(p.images.back) arr.push(p.images.back);
+          p.images = arr;
+        } else {
+          p.images = [String(p.images)];
+        }
+      }
+      if(!p.slug && p.name) p.slug = slugify(p.name);
+      return p;
+    });
+
+    // find product by slug
+    if(!slug){ showError('No product specified.'); return; }
+    const target = PRODUCTS.find(p => p.slug === slug || String(p.id) === slug);
+    if(!target){ showError('Product not found.'); return; }
+    CURRENT_PRODUCT = target;
+    images = Array.isArray(target.images) ? target.images.slice() : [];
+
+    // ensure front-first behavior:
+    // if product.images included an object earlier we already converted, but if original had 'front'/'back' order is preserved
+    // if there are still keys (defensive), handle:
+    if(images.length === 0 && target.images && typeof target.images === 'object'){
+      // fallback: try front/back
+      if(target.images.front) images.push(target.images.front);
+      if(target.images.back) images.push(target.images.back);
+    }
+
+    // If there are no images at all, use a placeholder
+    if(images.length === 0) images = ['placeholder.jpg'];
+
+    // fill main and thumbnails
+    renderGallery();
+    renderMeta();
+    renderSimilar();
+    injectJsonLd(CURRENT_PRODUCT);
+
+    // Add to cart handler
+    addToCartBtn.addEventListener('click', ()=>{
+      CART[CURRENT_PRODUCT.id] = (CART[CURRENT_PRODUCT.id] || 0) + 1;
+      addToCartBtn.textContent = 'Added';
+      setTimeout(()=> addToCartBtn.textContent = 'Add to cart', 900);
+    });
+  } catch(err){
+    console.error(err);
+    showError('Failed to load product data.');
+  }
+}
+
+/* ---------------------------
+  Render gallery: front default and thumbs
+----------------------------*/
+function renderGallery(){
+  currentIndex = 0;
+  setMainImage(images[currentIndex]);
+  thumbsWrap.innerHTML = '';
+  images.forEach((src, i)=>{
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = (CURRENT_PRODUCT.name || 'Product') + ' ' + (i+1);
+    img.tabIndex = 0;
+    if(i === currentIndex) img.classList.add('active');
+    img.addEventListener('click', ()=> switchImage(i));
+    img.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') switchImage(i); });
+    thumbsWrap.appendChild(img);
+  });
+
+  // swipe support on main image (touch)
+  let startX = null;
+  const wrap = document.getElementById('mainImageWrap');
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+  wrap.addEventListener('touchend', e => {
+    if(startX == null) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - startX;
+    if(Math.abs(diff) > 40){
+      if(diff < 0) nextImage(); else prevImage();
+    }
+    startX = null;
+  });
+}
+
+/* set the main image src and ARIA label */
+function setMainImage(src){
+  mainImage.src = src;
+  mainImage.alt = (CURRENT_PRODUCT.name || 'Product') + ' image';
+  // update active thumb border
+  qsa('#thumbs img').forEach((t, idx) => t.classList.toggle('active', idx === currentIndex));
+}
+
+/* switch image by index */
+function switchImage(i){
+  if(i < 0 || i >= images.length) return;
+  currentIndex = i;
+  setMainImage(images[currentIndex]);
+}
+
+/* next / prev */
+function nextImage(){ switchImage((currentIndex + 1) % images.length); }
+function prevImage(){ switchImage((currentIndex - 1 + images.length) % images.length); }
+
+/* ---------------------------
+  Render meta (title, price, desc)
+----------------------------*/
+function renderMeta(){
+  productName.textContent = CURRENT_PRODUCT.name || '';
+  productCategory.textContent = CURRENT_PRODUCT.category || '';
+  // determine currency from raw price string if present
+  const currency = detectCurrency(CURRENT_PRODUCT.price || '');
+  productPrice.textContent = formatCurrency(CURRENT_PRODUCT._price || 0, currency);
+  productDesc.textContent = CURRENT_PRODUCT.description || CURRENT_PRODUCT.short_description || '';
+}
+
+/* ---------------------------
+  Similar products grid
+----------------------------*/
+function renderSimilar(){
+  similarGrid.innerHTML = '';
+  const sim = PRODUCTS.filter(p => p.category === CURRENT_PRODUCT.category && p.id !== CURRENT_PRODUCT.id).slice(0,4);
+  sim.forEach(s => {
+    const a = document.createElement('a');
+    a.href = 'product.html?slug=' + encodeURIComponent(s.slug);
+    a.innerHTML = `<img src="${(s.images && s.images[0]) || 'placeholder.jpg'}" alt="${s.name}"><div><div style="font-weight:700">${s.name}</div><div style="color:var(--muted)">${formatCurrency(s._price, detectCurrency(s.price||''))}</div></div>`;
+    similarGrid.appendChild(a);
+  });
+}
+
+/* ---------------------------
+  JSON-LD for SEO (product)
+----------------------------*/
+function injectJsonLd(p){
+  try{
+    const priceCurr = detectCurrency(p.price || '');
+    const ld = {
+      "@context":"https://schema.org",
+      "@type":"Product",
+      "name": p.name,
+      "image": p.images || [],
+      "description": p.short_description || p.description || '',
+      "sku": p.slug || (p.id? String(p.id) : ''),
+      "brand": {"@type":"Brand","name":"Sama Labs"},
+      "offers": {
+        "@type":"Offer",
+        "url": location.href,
+        "priceCurrency": priceCurr,
+        "price": String(p._price || parsePriceValue(p.price || 0)),
+        "availability": "http://schema.org/InStock"
+      }
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.text = JSON.stringify(ld);
+    document.head.appendChild(s);
+  } catch(e){ console.warn('json-ld failed', e); }
+}
+
+/* ---------------------------
+  Helpers & errors
+----------------------------*/
+function showError(msg){
+  const content = qs('#content');
+  content.innerHTML = `<div style="padding:28px;background:#fff;border-radius:10px;color:#b00">${msg}</div>`;
+}
+
+/* ---------------------------
+  Kick off
+----------------------------*/
+loadAndRender();
+</script>
+</body>
+</html>
