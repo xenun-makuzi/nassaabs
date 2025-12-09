@@ -65,38 +65,12 @@
       color:var(--muted);
     }
 
-    /* Cart Button Styles */
-    .cart-btn{
-      position:relative;
-      background:#fff;
-      border:1px solid #dce9f9;
-      padding:8px 10px;
-      border-radius:10px;
-      cursor:pointer;
-    }
-    .cart-badge{
-      position:absolute;
-      top:-6px;
-      right:-6px;
-      background:var(--primary);
-      color:#fff;
-      padding:4px 7px;
-      border-radius:999px;
-      font-size:12px;
-      min-width:18px;
-      text-align:center;
-    }
-
-
-    /* HERO (MODIFIED) */
+    /* HERO */
+    /* Put position:relative so pseudo overlay is confined and won't leak above other sections */
     .store-hero{
       position:relative;
-      /* Dual image background: bk1.jpg on the left, bk2.jpg on the right */
-      background-image: url('bk1.jpg'), url('bk2.jpg');
-      background-position: left center, right center;
-      background-size: 50% 100%, 50% 100%;
-      background-repeat: no-repeat;
-      
+      background: url('bk1.jpg') no-repeat center center;
+      background-size: cover;
       border-radius:14px;
       padding:26px;
       margin-bottom:18px;
@@ -112,7 +86,7 @@
       content:"";
       position:absolute;
       inset:0;
-      background:rgba(0,0,0,0.4); /* Slightly darker overlay for better text contrast */
+      background:rgba(0,0,0,0.25); /* darker if needed */
       border-radius:14px;
       z-index:0;
       pointer-events:none;
@@ -280,13 +254,7 @@
 
     /* small screens */
     @media (max-width:640px){
-      .store-hero{ 
-        padding:18px; 
-        /* Fallback for small screens: use only one image or let cover blend */
-        background-image: url('bk1.jpg'); 
-        background-position: center center;
-        background-size: cover;
-      }
+      .store-hero{ padding:18px; }
       .search input{ width:160px; }
       .card{ min-height:260px; }
       .card-footer{ flex-direction:column; align-items:flex-start; gap:6px; }
@@ -314,8 +282,8 @@
     </nav>
 
     <div>
-      <button class="cart-btn" onclick="location.href='cart.html'" aria-label="View cart">
-        🛒 <span id="cartCount" class="cart-badge">0</span>
+      <button style="background:#fff;border:1px solid #dce9f9;padding:8px 10px;border-radius:8px" onclick="location.href='cart.html'" aria-label="View cart">
+        🛒 <span id="cartCount">0</span>
       </button>
     </div>
   </div>
@@ -325,17 +293,16 @@
 
   <section class="store-hero" aria-label="Store hero">
     <div>
+<p>
+        .
+      </p>
+      <h1>Shop Nassalab — High Purity Injectables, Orals & PCT</h1>
       <p>
         .
-      </p>
-      <h1>Shop Nassalab : High Purity Injectables, Orals & PCT</h1>
-      <p>.
-        <p>
+<p>
         .
-        
       </p>
       </p>
-     
     </div>
 
     <div style="display:flex;gap:14px;align-items:center">
@@ -404,7 +371,63 @@ document.getElementById('year').textContent = new Date().getFullYear();
 let PRODUCTS = [];
 let currentPage = 1;
 const PER_PAGE = 20;
-let CART = {}; // local runtime; persisted to localStorage
+
+// --- CART STATE MANAGEMENT (FIXED) ---
+const CART_KEY = 'nassalab_cart_v1';
+let CART_STATE = {
+  items: {},
+  isShippingRequired: false,
+  promoCode: null,
+};
+
+function saveCartState() {
+  localStorage.setItem(CART_KEY, JSON.stringify(CART_STATE));
+  // Dispatch event so other tabs/headers update count
+  window.dispatchEvent(new Event('storage')); 
+}
+
+// Safely load the cart, handling both the old and new storage formats
+function loadCartState() {
+  const rawState = localStorage.getItem(CART_KEY);
+  if (!rawState) return;
+
+  try {
+    const loaded = JSON.parse(rawState);
+    if (loaded && loaded.items && typeof loaded.items === 'object') {
+      // New structured format
+      CART_STATE = { 
+        items: loaded.items,
+        isShippingRequired: loaded.isShippingRequired || false,
+        promoCode: loaded.promoCode || null
+      };
+    } else if (loaded && typeof loaded === 'object') {
+      // Old simple format: convert it to the new internal structure
+      CART_STATE.items = loaded;
+      // Other properties remain default
+    }
+  } catch (e) {
+    console.error("Error parsing cart state", e);
+    // If parsing fails, reset to empty cart
+    CART_STATE = { items: {}, isShippingRequired: false, promoCode: null };
+  }
+}
+
+// --- Cart synchronization function (FIXED) ---
+function syncCartFromStorage(){
+  loadCartState(); // Load the state robustly
+
+  // Calculate count from the CART_STATE.items object
+  const count = Object.values(CART_STATE.items).reduce((s,n)=> s + (Number(n)||0), 0);
+  
+  if (count === 0 && (CART_STATE.isShippingRequired || CART_STATE.promoCode)) {
+      // If the cart is empty but has old metadata, clean it up
+      CART_STATE = { items: {}, isShippingRequired: false, promoCode: null };
+      saveCartState();
+  }
+  
+  document.getElementById('cartCount').textContent = count;
+}
+
 
 /* helpers */
 function slugify(s){ return String(s||'').toLowerCase().replace(/\s+/g,'-').replace(/[^\w\-]+/g,'').replace(/\-\-+/g,'-').replace(/^-+|-+$/g,''); }
@@ -614,24 +637,18 @@ function renderPager(total, totalPages){
   document.getElementById('nextPage').onclick = ()=> { if(currentPage<totalPages){ currentPage++; renderProducts(); window.scrollTo({top:140, behavior:'smooth'}); } };
 }
 
-/* add to cart (stores in localStorage 'nassalab_cart_v1') */
+/* add to cart (FIXED to use CART_STATE structure) */
 function addToCart(product){
-  const key = 'nassalab_cart_v1';
-  const raw = localStorage.getItem(key);
-  const cart = raw ? JSON.parse(raw) : {};
+  loadCartState(); // Load current state
   const id = String(product.id || product.slug || product.sku || product.slug);
-  cart[id] = (cart[id]||0) + 1;
-  localStorage.setItem(key, JSON.stringify(cart));
+  
+  // Add item to the items property of the structured state
+  CART_STATE.items[id] = (CART_STATE.items[id]||0) + 1; 
+  
+  saveCartState(); // Save the complete structured state
   syncCartFromStorage();
 }
 
-function syncCartFromStorage(){
-  const key = 'nassalab_cart_v1';
-  const raw = localStorage.getItem(key);
-  const cart = raw ? JSON.parse(raw) : {};
-  const count = Object.values(cart).reduce((s,n)=> s + (Number(n)||0), 0);
-  document.getElementById('cartCount').textContent = count;
-}
 
 /* init listeners */
 document.getElementById('catFilter').addEventListener('change', ()=>{ currentPage = 1; renderProducts(); });
@@ -647,15 +664,7 @@ document.getElementById('clearFilters').addEventListener('click', ()=>{
 document.getElementById('searchBtn').addEventListener('click', ()=>{ currentPage=1; renderProducts(); });
 
 /* preserve cart across tabs */
-window.addEventListener('storage', (e)=>{ if(e.key === 'nassalab_cart_v1') syncCartFromStorage(); });
-
-function syncCartFromStorage(){ /* double definition guard */
-  const key = 'nassalab_cart_v1';
-  const raw = localStorage.getItem(key);
-  const cart = raw ? JSON.parse(raw) : {};
-  const count = Object.values(cart).reduce((s,n)=> s + (Number(n)||0), 0);
-  document.getElementById('cartCount').textContent = count;
-}
+window.addEventListener('storage', (e)=>{ if(e.key === CART_KEY) syncCartFromStorage(); });
 
 /* Reviews (demo) */
 function renderReviews(){
@@ -680,18 +689,6 @@ function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;
 loadProducts();
 syncCartFromStorage();
 </script>
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6935c9614699f5197df5035d/default';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
+
 </body>
 </html>
