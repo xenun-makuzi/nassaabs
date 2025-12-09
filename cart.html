@@ -185,8 +185,31 @@
 
 <script>
 /* ------------------------------------------------
-   Cart Logic
+   Cart Logic (Updated for EmailJS)
    ------------------------------------------------ */
+
+// --- EmailJS Setup (NEW) ---
+/* IMPORTANT: Replace "YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", and "YOUR_PUBLIC_KEY" with your actual EmailJS credentials. */
+const EMAILJS_SERVICE_ID = "Payment911"; // Placeholder from cart2.html
+const EMAILJS_TEMPLATE_ID = "template_b7erllf"; // Placeholder from cart2.html
+const EMAILJS_PUBLIC_KEY = "NHFB-BLLpTMnFelp_"; // Placeholder from cart2.html
+
+// Load the EmailJS library
+const script = document.createElement('script');
+script.type = 'text/javascript';
+script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+document.head.appendChild(script);
+
+// Initialize EmailJS when the script loads
+script.onload = function() {
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  } else {
+    console.error("EmailJS failed to load.");
+  }
+};
+// --- End EmailJS Setup ---
+
 
 let PRODUCTS = [];
 let CART_STATE = {
@@ -218,6 +241,12 @@ function formatPrice(num) {
   // Use Math.round for currency precision
   return '$' + Math.round(num).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
+// Helper function to get the raw number from a formatted price string
+function getRawPrice(formattedPrice) {
+    if (!formattedPrice) return 0;
+    return parsePrice(formattedPrice.replace('$', '').replace(/,/g, ''));
+}
+
 
 function normalizeImage(p) {
   if (!p.images) return 'placeholder.jpg';
@@ -246,7 +275,7 @@ async function init() {
     // Load local cart state
     const rawState = localStorage.getItem(CART_KEY);
     const loadedState = rawState ? JSON.parse(rawState) : {};
-    
+
     // Check for old cart format (just item:qty map)
     if (!loadedState.items && rawState && rawState.startsWith('{') && !rawState.includes('isShippingRequired')) {
       CART_STATE.items = loadedState; // Old format
@@ -259,12 +288,15 @@ async function init() {
     let data = await res.json();
     if(data.products) data = data.products; // handle if wrapped
     PRODUCTS = Array.isArray(data) ? data : [];
-    
+
     // Sync state to UI elements
     document.getElementById('shippingToggle').checked = CART_STATE.isShippingRequired;
     if (CART_STATE.promoCode) {
       document.getElementById('promoInput').value = CART_STATE.promoCode;
     }
+    
+    // NOTE (NEW): Replace the inline onclick on the checkout button with this new handler
+    document.querySelector('.btn-checkout').onclick = handleCheckout; 
 
     render();
     document.getElementById('loading').style.display = 'none';
@@ -279,9 +311,9 @@ function render() {
   const container = document.getElementById('cartContent');
   const emptyState = document.getElementById('emptyCart');
   const listEl = document.getElementById('cartList');
-  
+
   const ids = Object.keys(CART_STATE.items);
-  
+
   // Check if empty
   if (ids.length === 0) {
     container.style.display = 'none';
@@ -292,10 +324,13 @@ function render() {
     saveCartState();
     return;
   }
-  
+
   container.style.display = 'grid';
   emptyState.style.display = 'none';
   listEl.innerHTML = '';
+  
+  // (NEW) Used to build the email content later
+  window.ORDER_ITEMS_DETAIL = [];
 
   let subtotal = 0;
   let totalItems = 0;
@@ -306,7 +341,7 @@ function render() {
     if (qty <= 0) return;
 
     const product = PRODUCTS.find(p => String(p.id) === id || p.slug === id);
-    
+
     if (!product) {
       delete CART_STATE.items[id];
       saveCartState();
@@ -317,6 +352,14 @@ function render() {
     const lineTotal = price * qty;
     subtotal += lineTotal;
     totalItems += qty;
+    
+    // (NEW) Store details for email
+    window.ORDER_ITEMS_DETAIL.push({
+        name: product.name,
+        qty: qty,
+        price: price,
+        lineTotal: lineTotal
+    });
 
     const row = document.createElement('div');
     row.className = 'cart-row';
@@ -342,25 +385,35 @@ function render() {
     `;
     listEl.appendChild(row);
   });
-  
+
   // --- Summary Calculations ---
-  
+
   // 1. Discount
   const discountRate = getDiscountPercentage(CART_STATE.promoCode);
   const discountValue = subtotal * discountRate;
   const subtotalAfterDiscount = subtotal - discountValue;
-  
+
   // 2. Shipping
   let shippingCost = 0;
   if (CART_STATE.isShippingRequired) {
     shippingCost = SHIPPING_FEE;
   }
-  
+
   // 3. Final Total
   const finalTotal = subtotalAfterDiscount + shippingCost;
+  
+  // (NEW) Store final calculation values in a global object for checkout
+  window.ORDER_TOTALS = {
+      subtotal: subtotal,
+      discountValue: discountValue,
+      shippingCost: shippingCost,
+      finalTotal: finalTotal,
+      isShippingRequired: CART_STATE.isShippingRequired,
+      promoCode: CART_STATE.promoCode
+  };
 
   // --- Update Summary UI ---
-  
+
   document.getElementById('itemCountDisplay').textContent = totalItems;
   document.getElementById('subTotal').textContent = formatPrice(subtotal);
 
@@ -373,10 +426,10 @@ function render() {
   } else {
     discountRow.style.display = 'none';
   }
-  
+
   // Shipping UI
   document.getElementById('shippingCost').textContent = CART_STATE.isShippingRequired ? formatPrice(shippingCost) : 'Free';
-  
+
   // Final Total UI
   document.getElementById('finalTotal').textContent = formatPrice(finalTotal);
 
@@ -395,7 +448,7 @@ function render() {
   }
 }
 
-// 3. Cart Actions
+// 3. Cart Actions (Unchanged)
 
 window.toggleShipping = function(isChecked) {
   CART_STATE.isShippingRequired = isChecked;
@@ -413,14 +466,14 @@ window.applyPromoCode = function() {
     render();
     return;
   }
-  
+
   if (PROMO_CODES[input]) {
     CART_STATE.promoCode = input;
     // Message will be handled by render() after state change
   } else {
     CART_STATE.promoCode = input; // Keep invalid code in state to show error message
   }
-  
+
   saveCartState();
   render();
 };
@@ -442,9 +495,75 @@ window.removeItem = function(id) {
 };
 
 
+// 4. Checkout Logic (NEW)
+
+/**
+ * Handles the checkout process: sends order details via EmailJS 
+ * and then redirects the user.
+ */
+window.handleCheckout = async function() {
+    if (Object.keys(CART_STATE.items).length === 0) {
+        alert('Your cart is empty. Please add items before checking out.');
+        return;
+    }
+
+    if (typeof emailjs === 'undefined') {
+        alert('Email service is not yet initialized. Please wait a moment and try again.');
+        return;
+    }
+
+    // --- Build Email Content ---
+    const total = formatPrice(window.ORDER_TOTALS.finalTotal);
+    const subtotal = formatPrice(window.ORDER_TOTALS.subtotal);
+    const discount = formatPrice(window.ORDER_TOTALS.discountValue);
+    const shipping = window.ORDER_TOTALS.isShippingRequired ? formatPrice(window.ORDER_TOTALS.shippingCost) : 'Free';
+    const promo = window.ORDER_TOTALS.promoCode || 'N/A';
+    
+    const orderDetails = window.ORDER_ITEMS_DETAIL.map(item => {
+        return `${item.name} - Qty: ${item.qty} - ${formatPrice(item.lineTotal)} (${formatPrice(item.price)} ea)`;
+    }).join('\n');
+    
+    const messageContent = `
+        --- NEW NASSALAB ORDER ---
+        
+        Order Details:
+        ${orderDetails}
+        
+        --- Summary ---
+        Subtotal: ${subtotal}
+        Discount (${promo}): ${discount}
+        Shipping: ${shipping}
+        
+        FINAL TOTAL: ${total}
+    `;
+
+    // The template must be configured in EmailJS to accept these fields.
+    const templateParams = {
+        name: "Nassalab Customer (Unspecified)", // Placeholder, as cart.html lacks a name input
+        email: "no-email-provided@nassalab.com", // Placeholder
+        total: total,
+        message: messageContent,
+        subject: `New Nassalab Order - Total ${total}`
+    };
+
+    try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+        
+        alert(`✅ Order details ($${total}) successfully sent for processing! Redirecting to checkout...`);
+        
+        // Redirect as per the original function's intent
+        window.location.href = 'checkout.html'; 
+    } catch (err) {
+        alert('❌ Failed to send order details. Please check your EmailJS setup.');
+        console.error("EmailJS Error:", err);
+    }
+};
+
+
 // Start
 init();
 
 </script>
+
 </body>
 </html>
