@@ -237,6 +237,19 @@
       .why{grid-template-columns:1fr}
       .suggest-list{max-height:50vh}
     }
+/* Stop horizontal movement */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Cancel accidental animations/transforms */
+* {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
   </style>
 </head>
 <body>
