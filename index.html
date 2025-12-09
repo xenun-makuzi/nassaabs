@@ -22,15 +22,75 @@
     .container{max-width:var(--container);margin:0 auto;padding:28px}
 
     /* Header */
+    /* Header is already sticky - position:sticky is retained */
     header{position:sticky;top:0;z-index:999;background:rgba(255,255,255,0.96);backdrop-filter:blur(4px);border-bottom:1px solid rgba(7,22,42,0.04)}
     .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--container);margin:0 auto;padding:14px 18px}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,var(--primary),#075bb3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    
+    /* New: Menu Toggle Button */
+    .menu-toggle{
+      background:none; border:none; font-size:24px; color:var(--text); cursor:pointer; padding: 0 8px 0 0;
+      display: flex;
+      align-items: center;
+      order: -1; /* Place before logo in flex container */
+    }
+
     nav.main{display:flex;gap:14px;align-items:center}
     nav.main a{padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
     .nav-actions{display:flex;gap:12px;align-items:center}
     .cart-btn{position:relative;background:transparent;border:1px solid rgba(7,22,42,0.06);padding:8px 10px;border-radius:10px;cursor:pointer}
     .cart-badge{position:absolute;top:-6px;right:-6px;background:var(--primary);color:#fff;padding:4px 7px;border-radius:999px;font-size:12px}
+
+    /* New Menu Styles for Category Sidebar/Overlay */
+    #categoryMenuOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1900;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #categoryMenuOverlay.is-open {
+      visibility: visible;
+      opacity: 1;
+    }
+    #categoryMenu {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      max-width: 80vw;
+      background: var(--card);
+      padding: 20px;
+      transform: translateX(100%);
+      transition: transform 0.3s;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    }
+    #categoryMenuOverlay.is-open #categoryMenu {
+      transform: translateX(0);
+    }
+    #categoryList {
+      list-style: none;
+      padding: 0;
+      margin-top: 15px;
+    }
+    #categoryList li {
+      margin-bottom: 5px;
+    }
+    #categoryList a {
+      display: block;
+      padding: 10px 5px;
+      border-bottom: 1px solid #eee;
+      font-weight: 600;
+      color: var(--text);
+    }
+    #closeMenu {
+      background: none; border: none; font-size: 24px; cursor: pointer; position: absolute; top: 10px; right: 10px; color: var(--muted);
+    }
 
     /* HERO (large background with dark overlay) */
     .hero{
@@ -83,7 +143,7 @@
     /* Featured / grid */
     .section{padding:24px 0}
     .section .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    /* Updated to 5 products - using flex wrap for cleaner presentation if it's not exactly 4 */
+    /* Responsive grid handles 7 items gracefully */
     .product-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px}
     .card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(5,12,30,0.06);display:flex;flex-direction:column;transition:transform .18s ease}
     .card:hover{transform:translateY(-6px)}
@@ -147,6 +207,7 @@
 <header id="topbar" role="banner">
   <div class="nav-inner">
     <div class="brand">
+      <button id="menuToggle" class="menu-toggle" aria-label="Toggle categories menu">☰</button>
       <div class="logo">NL</div>
       <div>
         <div style="font-weight:700">Nassalab</div>
@@ -286,6 +347,15 @@
   </div>
 </main>
 
+<div id="categoryMenuOverlay">
+  <div id="categoryMenu">
+    <button id="closeMenu" aria-label="Close categories menu">×</button>
+    <h3 style="margin-top:0">Product Categories</h3>
+    <ul id="categoryList">
+      </ul>
+  </div>
+</div>
+
 <footer>
   <div class="footer-inner">
     <div class="footer-col">
@@ -376,6 +446,13 @@ const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const cartCountEl = document.getElementById('cartCount');
 const yearEl = document.getElementById('year');
+// New DOM references for the category menu
+const menuToggleBtn = document.getElementById('menuToggle');
+const categoryMenuOverlay = document.getElementById('categoryMenuOverlay');
+const categoryMenu = document.getElementById('categoryMenu');
+const categoryList = document.getElementById('categoryList');
+const closeMenuBtn = document.getElementById('closeMenu');
+
 
 yearEl.textContent = new Date().getFullYear();
 
@@ -401,12 +478,14 @@ async function loadProducts(){
       return p;
     });
     buildCategories();
+    populateCategoryMenu(); // NEW: Populate the side menu
     renderCategoriesCarousel();
-    renderProducts(); // initial featured product grid (limited to 5)
+    renderProducts(); // initial featured product grid (limited to 7)
     wireSearch();
     populateReviews();
     initFAQ();
     syncCartCountFromStorage();
+    wireCategoryMenu(); // NEW: Wire up menu toggle logic
   } catch(e){
     console.error('Failed to load products.json', e);
     productGrid.innerHTML = '<div style="padding:24px;background:#fff;border-radius:8px;color:#b00">Failed to load product data. See console.</div>';
@@ -423,6 +502,39 @@ function buildCategories(){
     if(!map[c].exampleImg && p.images && p.images[0]) map[c].exampleImg = p.images[0];
   });
   CATEGORIES = Object.values(map).sort((a,b)=>b.count-a.count);
+}
+
+/* NEW: Populate the Category Menu */
+function populateCategoryMenu() {
+  categoryList.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const li = document.createElement('li');
+    // Link directly to store page with category filter
+    li.innerHTML = `<a href="store.html?category=${encodeURIComponent(cat.name)}">${escapeHtml(cat.name)} (${cat.count})</a>`;
+    categoryList.appendChild(li);
+  });
+}
+
+/* NEW: Wire up Category Menu Toggle */
+function wireCategoryMenu(){
+    function openMenu(){
+        categoryMenuOverlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden'; // prevent scroll on body
+    }
+    function closeMenu(){
+        categoryMenuOverlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    menuToggleBtn.addEventListener('click', openMenu);
+    closeMenuBtn.addEventListener('click', closeMenu);
+    categoryMenuOverlay.addEventListener('click', (e) => {
+        if(e.target === categoryMenuOverlay) closeMenu(); // close if clicking overlay background
+    });
+    // Close menu when clicking a link inside it
+    categoryList.addEventListener('click', (e) => {
+      if(e.target.closest('a')) closeMenu();
+    });
 }
 
 /* Render categories carousel and enable auto scroll + drag */
@@ -523,12 +635,10 @@ function renderProducts(){
   FILTERED = list;
   
   // --- START FEATURED LIMIT MODIFICATION (index.html only) ---
-  const featuredLimit = 5;
-  const pageList = list.slice(0, featuredLimit);
+  const featuredLimit = 7; // Changed from 5 to 7
+  // Use .slice(-N) to get the last N elements (the newest products)
+  const pageList = list.slice(-featuredLimit); 
   // --- END FEATURED LIMIT MODIFICATION ---
-
-  // NOTE: Pagination logic (total pages, current page, renderPager call) removed 
-  // because this is the featured section on the index page, which does not paginate.
 
   productGrid.innerHTML = '';
   if(pageList.length === 0){
@@ -594,15 +704,37 @@ function updateUrlPage(){
 function addToCart(id){
   const key = 'nassalab_cart_v1';
   const raw = localStorage.getItem(key);
-  const cart = raw ? JSON.parse(raw) : {};
-  cart[id] = (cart[id]||0) + 1;
-  localStorage.setItem(key, JSON.stringify(cart));
+  // Robust cart state loading to support the structured format required by cart.html
+  let cartState = { items: {} };
+  try {
+    const loaded = raw ? JSON.parse(raw) : {};
+    if (loaded.items && typeof loaded.items === 'object') {
+      cartState = loaded;
+    } else if (typeof loaded === 'object') {
+      cartState.items = loaded; // Handle old flat format
+    }
+  } catch (e) {
+    console.error("Error parsing cart state", e);
+  }
+
+  const itemId = String(id);
+  cartState.items[itemId] = (cartState.items[itemId]||0) + 1;
+  localStorage.setItem(key, JSON.stringify(cartState));
   syncCartCountFromStorage();
 }
 function syncCartCountFromStorage(){
   const key = 'nassalab_cart_v1';
   const raw = localStorage.getItem(key);
-  const cart = raw ? JSON.parse(raw) : {};
+  // Robust cart state loading
+  let cart = {};
+  try {
+    const loaded = raw ? JSON.parse(raw) : {};
+    // Check for the new structured format or fall back to the old flat format
+    cart = loaded.items && typeof loaded.items === 'object' ? loaded.items : loaded;
+  } catch(e) {
+    console.error("Error syncing cart count", e);
+  }
+  
   const count = Object.values(cart).reduce((s,n)=> s + (Number(n)||0), 0);
   cartCountEl.textContent = count;
 }
@@ -693,15 +825,14 @@ function initFAQ(){
   document.querySelectorAll('.faq-item').forEach(item => {
     item.addEventListener('click', ()=> {
       const open = item.querySelector('.faq-answer').style.display === 'block';
+      // Close all others
       document.querySelectorAll('.faq-answer').forEach(a=>a.style.display='none');
+      // Open this one if it wasn't already open
       if(!open) item.querySelector('.faq-answer').style.display = 'block';
     });
     item.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); item.click(); }});
   });
 }
-
-/* Sync cart badge on load */
-function syncCartCountFromStorage(){ const key='nassalab_cart_v1'; const raw=localStorage.getItem(key); const cart = raw ? JSON.parse(raw) : {}; const count = Object.values(cart).reduce((s,n)=>s + (Number(n)||0), 0); cartCountEl.textContent = count; }
 
 /* Wire up initial events + load products */
 window.addEventListener('load', ()=>{ loadProducts(); wireSearch(); syncCartCountFromStorage(); });
@@ -709,7 +840,6 @@ window.addEventListener('load', ()=>{ loadProducts(); wireSearch(); syncCartCoun
 // expose renderProducts for external nav changes
 window.renderProducts = renderProducts;
 </script>
-<!--Start of Tawk.to Script-->
 <script type="text/javascript">
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
@@ -721,6 +851,5 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
-<!--End of Tawk.to Script-->
 </body>
 </html>

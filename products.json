@@ -96,7 +96,7 @@
     "category": "Injectable Steroids",
     "description": "Devastating TNT 400 blend combining high-dose Testosterone and Trenbolone for ultimate lean mass and strength gains. One of the most powerful pre-mixed compounds available. Delivers both wet and dry effects for recomp transformation. Minimal injection volume needed. Advanced users only. Buy TNT 400 online – the nuclear option for experienced athletes seeking dramatic physique changes and competition-level conditioning in record time.",
     "price": "$60",
-    "images": { "front": "placeholder-inject-front.png", "back": "placeholder-inject-back.png" }
+    "images": { "front": "tnt400.jpg", "back": "tnt400.jpg" }
   },
   {
     "id": 12,
@@ -114,7 +114,7 @@
     "category": "Injectable Steroids",
     "description": "Long-ester Masteron Enanthate 200mg/ml for sustained anti-estrogenic effects and muscle hardening. Same incredible cosmetic benefits as Propionate with twice-weekly injections. Ideal for longer cutting cycles. Enhances vascularity and detail dramatically. Pharmaceutical-grade quality. Buy Masteron Enanthate online – the preferred choice for extended contest preparation and achieving paper-thin skin with maximum muscle separation.",
     "price": "$65",
-    "images": { "front": "placeholder-inject-front.png", "back": "placeholder-inject-back.png" }
+    "images": { "front": "mast.jpg", "back": "mast.jpg" }
   },
   {
     "id": 14,
@@ -141,7 +141,7 @@
     "category": "Injectable Steroids",
     "description": "Pure Testosterone Suspension 100mg/ml – no ester, fastest acting testosterone available. Explosive strength and power surges within hours. Pre-workout favorite among powerlifters and strength athletes. Water-based with daily administration. Ultra-potent and immediate effects. Buy Testosterone Suspension online – the original, most powerful form of testosterone for maximum performance enhancement.",
     "price": "$65",
-    "images": { "front": "placeholder-inject-front.png", "back": "placeholder-inject-back.png" }
+    "images": { "front": "testo.jpg", "back": "testo.jpg" }
   },
   {
     "id": 17,
@@ -150,16 +150,16 @@
     "category": "Injectable Steroids",
     "description": "Pharmaceutical Clenbuterol HCL injectable 40mcg/ml – superior to tablets for fat loss and cutting. Potent beta-2 agonist increases metabolism, thermogenesis, and preserves muscle mass. Longer-lasting and stronger than oral form. Perfect for bodybuilding contest prep. Buy injectable Clenbuterol online – the professional choice for achieving extreme leanness and definition.",
     "price": "$65",
-    "images": { "front": "placeholder-inject-front.png", "back": "placeholder-inject-back.png" }
+    "images": { "front": "clen.jpg", "back": "clen.jpg" }
   },
   {
     "id": 18,
     "slug": "anavar-5mg-200",
-    "name": "Anavar Oxandrolone 5mg - 200 Tablets",
+    "name": "Anavar Oxandrolone 5mg - 50 Tablets",
     "category": "Oral Steroids",
     "description": "Premium Anavar Oxandrolone 5mg tablets – the mildest, safest oral steroid perfect for beginners, women, and cutting cycles. Promotes lean muscle gains, fat loss, and strength with virtually no side effects. No aromatization, minimal liver impact. Ideal for first-time users and recomp phases. Pharmaceutical quality ensures consistent dosing. Buy Anavar 5mg online – the gold standard for clean, quality gains and enhanced athletic performance.",
     "price": "$75",
-    "images": { "front": "placeholder-oral-front.png", "back": "placeholder-oral-back.png" }
+    "images": { "front": "oxandrolone.png", "back": "oxandrolone-back.png" }
   },
   {
     "id": 19,
@@ -312,7 +312,7 @@
     "category": "Prescription & Sexual Health",
     "description": "Superman combo tablets containing both Sildenafil and Tadalafil for immediate onset and extended duration. Ultimate sexual enhancement formula. Maximum hardness, stamina, and confidence. Buy Superman pills online – the strongest ED combination available for peak performance.",
     "price": "$70",
-    "images": { "front": "placeholder-oral-front.png", "back": "placeholder-oral-back.png" }
+    "images": { "front": "viagra.jpg", "back": "viagra.jpg" }
   },
   {
     "id": 36,
@@ -321,7 +321,7 @@
     "category": "HGH",
     "description": "Genuine Eli Lilly Humatrope 100iu pharmaceutical HGH kit with cartridges. Highest purity 191aa recombinant growth hormone available. Dramatic fat loss, muscle growth, anti-aging, and recovery benefits. Gold standard in HGH therapy. Buy Humatrope online – premium quality trusted by clinics worldwide.",
     "price": "$400",
-    "images": { "front": "placeholder-hgh-front.png", "back": "placeholder-hgh-back.png" }
+    "images": { "front": "human.jpg", "back": "human.jpg" }
   },
   {
     "id": 37,
@@ -339,7 +339,7 @@
     "category": "HGH",
     "description": "Pfizer Genotrophin 36iu pen cartridges – convenient, precise dosing system. Pharmaceutical-grade HGH trusted worldwide. Perfect for anti-aging and performance protocols. Buy Genotrophin online – the most user-friendly HGH delivery method available.",
     "price": "$200",
-    "images": { "front": "placeholder-hgh-front.png", "back": "placeholder-hgh-back.png" }
+    "images": { "front": "gen.jpg", "back": "gen.jpg" }
   },
   {
     "id": 39,
@@ -366,7 +366,7 @@
     "category": "HGH",
     "description": "Legendary Hygetropin 200iu kit – most trusted Chinese generic HGH worldwide. Exceptional purity and strong effects on fat loss and muscle fullness. Best value for extended cycles. Buy Hygetropin online – the people’s choice for premium generic growth hormone.",
     "price": "$250",
-    "images": { "front": "placeholder-hgh-front.png", "back": "placeholder-hgh-back.png" }
+    "images": { "front": "hyg.jpg", "back": "hyg.jpg" }
   },
   {
     "id": 42,
@@ -384,7 +384,7 @@
     "category": "Fat Burners & Weight Loss",
     "description": "Extreme Lipo-X 125mg fat burner blend with albuterol, sibutramine, yohimbine, caffeine, and green tea. Insane appetite suppression and thermogenesis. Rapid contest-ready fat loss. Advanced users only. Buy Lipo-X online – the strongest cutting compound stack available.",
     "price": "$70",
-    "images": { "front": "placeholder-oral-front.png", "back": "placeholder-oral-back.png" }
+    "images": { "front": "lipo.jpg", "back": "lipo.jpg" }
   },
   {
     "id": 44,
@@ -402,7 +402,7 @@
     "category": "Fat Burners & Weight Loss",
     "description": "Pharmaceutical Clenbuterol 50mcg tablets – most popular cutting drug in bodybuilding. Powerful fat loss, muscle preservation, and increased energy. Two-week on/off protocol. Buy Clenbuterol tabs online – essential for contest preparation and rapid fat reduction.",
     "price": "$80",
-    "images": { "front": "placeholder-oral-front.png", "back": "placeholder-oral-back.png" }
+    "images": { "front": "clen.jpg", "back": "clen" }
   },
   {
     "id": 46,
@@ -420,7 +420,7 @@
     "category": "Peptides & Weight Loss",
     "description": "Pharmaceutical-grade Semaglutide 2mg (Ozempic/Wegovy) for dramatic weight loss and appetite control. Most effective GLP-1 agonist available. Weekly injection protocol. Revolutionary fat loss results. Buy Semaglutide online – the game-changing weight loss peptide used by celebrities and athletes.",
     "price": "$80",
-    "images": { "front": "placeholder-peptide-front.png", "back": "placeholder-peptide-back.png" }
+    "images": { "front": "sem.jpg", "back": "sem.jpg" }
   },
   {
     "id": 48,
@@ -429,7 +429,7 @@
     "category": "Peptides & Weight Loss",
     "description": "Higher-dose Semaglutide 5mg vial for extended weight loss protocols. Same powerful appetite suppression and fat-burning effects as Ozempic. Cost-effective for longer cycles. Buy Semaglutide 5mg online – maximum strength GLP-1 for serious body transformation.",
     "price": "$160",
-    "images": { "front": "placeholder-peptide-front.png", "back": "placeholder-peptide-back.png" }
+    "images": { "front": "sem.jpg", "back": "sem.jpg" }
   },
   {
     "id": 49,
@@ -438,7 +438,7 @@
     "category": "Peptides & Weight Loss",
     "description": "Next-gen Tirzepatide 10mg dual GIP/GLP-1 agonist – more powerful than Semaglutide. Extreme appetite suppression and fat loss. Clinical trials show superior results. Weekly injection. Buy Tirzepatide online – currently the most effective weight loss peptide available.",
     "price": "$150",
-    "images": { "front": "placeholder-peptide-front.png", "back": "placeholder-peptide-back.png" }
+    "images": { "front": "tirz.jpg", "back": "tirzf.jpg" }
   },
   {
     "id": 50,
@@ -447,7 +447,7 @@
     "category": "Peptides & Weight Loss",
     "description": "Experimental Retatrutide 10mg triple agonist (GLP-1/GIP/Glucagon) – most potent weight loss compound in development. Unprecedented fat reduction and muscle preservation. Currently in Phase 3 trials. Buy Retatrutide online – cutting-edge peptide for extreme body recomposition.",
     "price": "$160",
-    "images": { "front": "placeholder-peptide-front.png", "back": "placeholder-peptide-back.png" }
+    "images": { "front": "ret.jpg", "back": "reta.jpg" }
   },
   {
     "id": 51,
@@ -474,7 +474,7 @@
     "category": "Peptides",
     "description": "Ultimate healing and recovery blend – TB-500 + BPC-157 5mg each. Accelerates injury repair, tendon/ligament healing, and gut health. Essential for athletes with joint issues or training injuries. Buy TB500/BPC157 online – the most effective regenerative peptide combination available.",
     "price": "$80",
-    "images": { "front": "placeholder-peptide-front.png", "back": "placeholder-peptide-back.png" }
+    "images": { "front": "tb.jpg", "back": "bpc.jpg" }
   },
   {
     "id": 54,
@@ -600,7 +600,7 @@
     "category": "SARMs",
     "description": "5-Amino-1MQ 50mg – novel NNMT inhibitor for dramatic fat loss and metabolic enhancement. Boosts NAD+ levels and cellular energy. Revolutionary weight management compound. Minimal side effects. Buy 5-Amino-1MQ online – cutting-edge science for body recomposition and anti-aging.",
     "price": "$280",
-    "images": { "front": "placeholder-sarm-front.png", "back": "placeholder-sarm-back.png" }
+    "images": { "front": "amino.jpg", "back": "amino.jpg" }
   },
   {
     "id": 101,
@@ -609,7 +609,7 @@
     "category": "HGH",
     "description": "Official Nassatropin 191aa recombinant human growth hormone – the original Nassa Labs flagship product. Premium generic HGH delivering exceptional fat loss, lean muscle gains, recovery, skin rejuvenation, and powerful anti-aging benefits. Complete kit with 10 vials and bacteriostatic water. Every batch third-party tested with unique NassaTAG scratch-code verification system. Trusted by thousands worldwide since 2021 for pharmaceutical-grade quality at unbeatable value. Buy authentic Nassatropin online directly from Nassa Labs – the most recognized and reliable European generic somatropin available today.",
     "price": "$350",
-    "images": { "front": "nassa-nassatropin-front.png", "back": "nassa-nassatropin-back.png" }
+    "images": { "front": "nassaf.jpg", "back": "nassab.jpg" }
   },
   {
     "id": 102,
@@ -627,7 +627,7 @@
     "category": "Injectable Steroids",
     "description": "Nassa Labs Testosterone Cypionate 250mg/ml – long-ester testosterone identical to American pharmaceutical standards. Stable blood levels, massive gains, and excellent recovery. NassaTAG authenticity guaranteed. Buy real Nassa Labs Test Cyp online – premium European quality trusted worldwide.",
     "price": "€$60",
-    "images": { "front": "testt.jpg", "back": "testt.jpg" }
+    "images": { "front": "cypio.jpg", "back": "cypio.jpg" }
   },
   {
     "id": 104,
@@ -736,5 +736,68 @@
     "description": "Nassa Labs Drostanolone Enanthate 200mg/ml – ultimate cutting and hardening steroid. Anti-estrogenic properties with NassaTAG verification. Buy authentic Nassa Labs Masteron Prop online – contest-prep essential.",
     "price": "$55",
     "images": { "front": "drostanolone_enanthate.png", "back": "drostanolone_enanthate.png" }
+  },
+  {
+    "id": 116,
+    "slug": "wegovy",
+    "name": "Wegovy",
+    "category": "Fat Burners & Weight Loss",
+    "description": "Wegovy is an injectable weight-loss medication for overweight adults or adults with obesity. It contains the active ingredient semaglutide, which mimics a naturally occurring hormone called glucagon-like peptide-1 (GLP-1). This hormone helps to regulate your blood sugar levels, and also sends signals to receptors in your brain that manage your appetite, allowing you to feel fuller for longer.Wegovy is prescribed to be taken just once a week alongside a diet and exercise plan to help you lose weight. Taken as prescribed, it can help you lose up to 17% of your starting weight.To be eligible for Wegovy, you must have a body mass index (BMI) of 30, or over 27 and a weight-related medical condition or risk factor, such as high blood pressure.",
+    "price": "$250",
+    "images": { "front": "weg.jpg", "back": "weg.jpg" }
+  },
+  {
+    "id": 117,
+    "slug": "Ozempic",
+    "name": "Ozempic",
+    "category": "Fat Burners & Weight Loss",
+    "description": "Semaglutide (Ozempic) is a prescription medication used to treat and manage Type 2 Diabetes. The active ingredient is Semaglutide which mimics the action of one of your bodies natural hormones (GLP1).It is also responsible for making you feel full and as a result, reducing your appetite. GLP1/Semaglutide also delays the emptying of your stomach which again goes toward making you feel fuller for longer.In clinical studies, Ozempic / Semaglutide has been shown to be effective and acceptable for use by patients with Type 2 Diabetes. The clinical evidence also suggests that Semaglutide may also help obese patients with weight loss, leaving the patient feeling more satisfied after eating.This suggests that Semaglutide may be a more potent drug and possibly better suited to those with a higher BMI or who may be classed as obese. The license indication is for type 2 diabetes and studies have looked at weight loss as a secondary endpoint. Clinical trials for which have looked at weight loss as a primary endpoint have recently been completed and are with the regulatory authorities pending a license to treat weight loss and obesity. Prescribing Ozempic for weight loss in the USA is therefore off-license, although clinically justified.Important to note that this medication is licensed for type-2 diabetes and not licensed as a weight loss medication. Prescribing for weight loss is therefore off-label.If you have any concerns or queries – get in touch with us and one of our experts will be happy to help.",
+    "price": "$260",
+    "images": { "front": "ozem.jpg", "back": "ozem.jpg" }
+  },
+  {
+    "id": 118,
+    "slug": "Mounjaro",
+    "name": "Mounjaro",
+    "category": "Fat Burners & Weight Loss",
+    "description": "Mounjaro is an injectable weight loss medication that contains the active ingredient tirzepatide. Tirzepatide works by activating two receptors (GLP-1 and GIP) to increase the level of hormones in the body, helping you to feel fuller for longer after a meal.Mounjaro should be taken just once a week alongside a healthy diet and exercise. It has been proven to help people lose around 22.5%* of their initial body weight by week 72 of treatment, at a maximum dose of 15 mg.To be eligible for Mounjaro for weight loss, you must have a body mass index (BMI) of 30 kg/m2 or more (obese), or of at least 27 kg/m2 (overweight) and have a risk factor or a health condition that is affected by weight.",
+    "price": "$290",
+    "images": { "front": "Mounjaro.jpg", "back": "Mounjaro.jpg" }
+  },
+  {
+    "id": 119,
+    "slug": "Tesamorelin",
+    "name": "Tesamorelin",
+    "category": "at Burners & Weight Loss",
+    "description": "",
+    "price": "$65",
+    "images": { "front": "Tesamorelin.jpg", "back": "Tesamorelin.jpg" }
+  },
+  {
+    "id": 120,
+    "slug": "Mass Gainer",
+    "name": "Mass Gainer",
+    "category": "Fat Burners & Weight Loss",
+    "description": "",
+    "price": "$240",
+    "images": { "front": "mass.jpg", "back": "mass.jpg" }
+  },
+  {
+    "id": 121,
+    "slug": "Creatine",
+    "name": "Creatine",
+    "category": "Oral Steroids",
+    "description": "",
+    "price": "$200",
+    "images": { "front": "creatine.jpg", "back": "creatine.jpg" }
+  },
+  {
+    "id": 122,
+    "slug": "Winidrol",
+    "name": "Winidrol 90 capsules",
+    "category": "Oral Steroids",
+    "description": "",
+    "price": "$250",
+    "images": { "front": "winidrol.jpg", "back": "winidrol.jpg" }
   }
 ]
