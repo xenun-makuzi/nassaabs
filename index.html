@@ -35,6 +35,19 @@
       align-items: center;
       order: -1; /* Place before logo in flex container */
     }
+    /* ... inside your <style> block ... */
+    
+    body{
+      /* Add this line to prevent horizontal scroll */
+      overflow-x: hidden; 
+      margin:0;
+      font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased
+    }
+    
+    /* ... rest of your CSS ... */
 
     nav.main{display:flex;gap:14px;align-items:center}
     nav.main a{padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
