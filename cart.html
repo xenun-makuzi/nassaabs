@@ -382,7 +382,7 @@ s0.parentNode.insertBefore(s1,s0);
 /* IMPORTANT: Replace "YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", and "YOUR_PUBLIC_KEY" with your actual EmailJS credentials. */
 const EMAILJS_SERVICE_ID = "Payment911"; 
 const EMAILJS_TEMPLATE_ID = "template_b7erllf"; 
-const EMAILJS_PUBLIC_KEY = "NHFB-BLLpTMnFelp_"; 
+const EMAILJS_PUBLIC_KEY = "QdVxjGB6MqCovNfXD"; 
 
 // Load the EmailJS library
 const script = document.createElement('script');
@@ -795,6 +795,7 @@ window.handleCheckout = async function() {
         name: customerEmail, // Using email as name placeholder
         email: customerEmail,
         total: total,
+        order_number: Date.now(),
         message: messageContent,
         subject: `New Nassalab Order - Total ${total}`
     };
